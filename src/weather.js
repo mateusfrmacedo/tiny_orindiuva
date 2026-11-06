@@ -1,0 +1,3 @@
+export function atmosphere(code,isDay=1){if(!isDay)return 'night';if(code>=51)return 'rain';if(code>=2)return 'cloud';return 'sun'}
+export function weatherLabel(code){if(code===0)return 'Céu limpo';if(code<=2)return 'Poucas nuvens';if(code===3)return 'Nublado';if(code<=48)return 'Névoa';if(code<=57)return 'Garoa';if(code<=67)return 'Chuva';if(code<=77)return 'Neve';if(code<=82)return 'Pancadas de chuva';if(code>=95)return 'Trovoadas';return 'Precipitação'}
+export const weatherURL='https://api.open-meteo.com/v1/forecast?latitude=-20.18194&longitude=-49.35083&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m&timezone=America%2FSao_Paulo&forecast_days=1';
