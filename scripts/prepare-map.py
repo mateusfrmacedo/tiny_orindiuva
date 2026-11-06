@@ -22,7 +22,7 @@ for e in r:
    kind=t['highway'];default=2 if kind in ['footway','path','steps'] else 4 if kind in ['service','track'] else 10 if kind in ['primary','secondary','tertiary'] else 7
    try:width=float(t.get('width',default))
    except ValueError:width=default
-   roads.append({'nodes':[n.attrib['ref'] for n in e.findall('nd')],'layer':int(t.get('layer','0')),'bridge':t.get('bridge')=='yes','access':t.get('access','yes'),'widthSource':'osm' if 'width' in t else 'estimated','id':eid,'points':pts,'name':t.get('name',''),'kind':kind,'width':width,'surface':t.get('surface','unknown'),'oneway':t.get('oneway')=='yes'})
+   roads.append({'nodes':[n.attrib['ref'] for n in e.findall('nd')],'layer':int(t.get('layer','0')),'bridge':t.get('bridge')=='yes','access':t.get('access','yes'),'widthSource':'osm' if 'width' in t else 'estimated','id':eid,'points':pts,'name':t.get('name',''),'kind':kind,'width':width,'surface':t.get('surface','unknown'),'oneway':-1 if t.get('oneway')=='-1' else t.get('oneway')=='yes'})
   if 'waterway'in t or t.get('natural')=='tree_row':waterways.append({'points':pts,'kind':t.get('waterway',t.get('natural'))})
   if len(pts)>3 and pts[0]==pts[-1] and any(k in t for k in ['leisure','landuse','building','natural','water']):
    p=Polygon(pts)
@@ -108,8 +108,20 @@ for block in polygonize(unary_union([LineString(r['points']) for r in motor])):
 church=next(p for p in places if 'Santa Terezinha'in p['name'])
 church_building=min(buildings,key=lambda b:Polygon(b['points']).distance(Point(church['point'])))
 church_building['landmark']='church';church_building['name']=church['name'];church_building['h']=12;church_building['roof']=6;church_building['roofMaterial']='metal'
+# Local visual frame for the owner's church photographs. Keep the original
+# detected footprint unchanged and record the illustrative architectural extent.
+pts=church_building['points'];a,b=max(zip(pts,pts[1:]+pts[:1]),key=lambda pair:math.dist(*pair));length=math.dist(a,b);forward=[(b[j]-a[j])/length for j in [0,1]]
+if forward[0]>0:forward=[-v for v in forward]
+right=[-forward[1],forward[0]];origin=church_building['centroid']
+church_frame={'origin':origin,'forward':forward,'right':right}
+def church_local(x,y):return [origin[j]+right[j]*x+forward[j]*y for j in [0,1]]
+church_visual=Polygon([church_local(x,y) for x,y in [(-8,10),(8,10),(8,-2),(16,-2),(16,-12),(8,-12),(8,-19),(-8,-19),(-8,-12),(-16,-12),(-16,-2),(-8,-2)]])
+church_building['visual']={'frame':church_frame,'reference':'Owner April 2026 panoramas','dimensions':'illustrative; original detected outline retained','outline':list(church_visual.exterior.coords)[:-1]}
+central_park=next(a for a in areas if a['id']=='228066426');central_park['visual']['churchFrame']=church_frame
+managed_parks=unary_union([Polygon(a['points']) for a in areas if a['kind']=='park'])
+
 # Vegetation is restricted to mapped parks/tree rows; never invent houses or fill yards.
-trees=[];built=unary_union([Polygon(b['points']).buffer(2) for b in buildings]+[LineString(r['points']).buffer(r['width']/2+1) for r in roads])
+trees=[];built=unary_union([church_visual.buffer(2)]+[Polygon(b['points']).buffer(2) for b in buildings]+[LineString(r['points']).buffer(r['width']/2+1) for r in roads])
 for area in areas:
  if area['kind']=='park':
   poly=Polygon(area['points']);edge=poly.exterior
@@ -132,7 +144,7 @@ for feature in json.loads((ROOT/'public/data/landcover-esa.geojson').read_text()
   for x in range(int(xmin),int(xmax),12):
    for y in range(int(ymin),int(ymax),12):
     px=x+random.uniform(-4,4);py=y+random.uniform(-4,4)
-    if poly.contains(Point(px,py)) and not built.contains(Point(px,py)):trees.append([round(px,2),round(py,2),random.uniform(6,8)])
+    if poly.contains(Point(px,py)) and not built.contains(Point(px,py)) and not managed_parks.contains(Point(px,py)):trees.append([round(px,2),round(py,2),random.uniform(6,8)])
 # Individual street trees are decorative; the road and building geometry is unchanged.
 for road in roads:
  if road['kind']not in ['residential','living_street']:continue
@@ -141,11 +153,21 @@ for road in roads:
   p=line.interpolate(distance);q=line.interpolate(distance+1);angle=math.atan2(q.y-p.y,q.x-p.x)
   for side in [-1,1]:
    offset=road['width']/2+2.7;x=p.x-side*math.sin(angle)*offset;y=p.y+side*math.cos(angle)*offset;point=Point(x,y)
-   if not built.contains(point) and building_cover.distance(point)<28:trees.append([round(x,2),round(y,2),random.uniform(1.6,2.5)])
+   if not built.contains(point) and not managed_parks.contains(point) and building_cover.distance(point)<28:trees.append([round(x,2),round(y,2),random.uniform(1.6,2.5)])
 # Give the circular garden airy planting, keeping its paths legible.
 for area in areas:
  pattern=area.get('visual',{}).get('pattern')
  if not pattern:continue
+ if pattern=='church-square':
+  poly=Polygon(area['points']);trees=[t for t in trees if not poly.contains(Point(t[:2]))]
+  planting=[(x,y) for x in [-31,-22,26,34] for y in [-19,2,22,43,62]]+[(-13,56),(14,59)]
+  for i,(x,y) in enumerate(planting):
+   point=Point(church_local(x,y));radius=3.8 if abs(x)>30 else 4.6
+   if poly.buffer(-3).contains(point) and built.distance(point)>radius:trees.append([round(point.x,2),round(point.y,2),radius])
+  for x,y in [(-14,24),(14,24),(-17,43)]:
+   point=Point(church_local(x,y))
+   if poly.contains(point) and built.distance(point)>3:trees.append([round(point.x,2),round(point.y,2),3.5,'palm'])
+  continue
  poly=Polygon(area['points']);trees=[t for t in trees if not poly.contains(Point(t[:2]))];fr=area['frame']
  def local(u,v):return [fr['origin'][j]+u*fr['u'][j]+v*fr['v'][j] for j in [0,1]]
  planting=[(.12,.12),(.12,.88),(.88,.12),(.88,.88),(.5,.12),(.5,.88),(.12,.5),(.88,.5)] if pattern=='circular-garden' else [(u,v) for u in [.13,.28,.72,.87] for v in [.18,.82]] if pattern=='fountain-garden' else [(u,v) for u in [.22,.5,.77] for v in [.28,.72]]
@@ -155,6 +177,14 @@ for area in areas:
  if pattern=='circular-garden':
   for u,v in [(.4,.4),(.6,.4),(.4,.6),(.6,.6)]:
    x,y=local(u,v);trees.append([round(x,2),round(y,2),3.5,'palm'])
+# Keep decorative crowns clear of actual roofs, streets and the church's visual wings.
+from shapely.strtree import STRtree
+obstacles=[Polygon(b['points']) for b in buildings]+[church_visual]+[LineString(r['points']).buffer(r['width']/2+.5) for r in roads]
+obstacle_index=STRtree(obstacles)
+def clear_crown(t):
+ p=Point(t[:2]);clearance=t[2]*.8
+ return all(obstacles[int(i)].distance(p)>=clearance for i in obstacle_index.query(p.buffer(clearance)))
+trees=[t for t in trees if clear_crown(t)]
 meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPerDegree':[104450,111320]},'bounds':[-49.369,-20.199,-49.335,-20.166],'sources':[{'name':'OpenStreetMap contributors','role':'Ruas, praças, caminhos, água e lugares','url':'https://www.openstreetmap.org/copyright','license':'ODbL-1.0'},{'name':'Microsoft Global ML Building Footprints / Bing','role':'Posição e contorno das construções detectadas em imagens aéreas','url':'https://github.com/microsoft/GlobalMLBuildingFootprints','license':'CDLA-Permissive-2.0','quadkey':'210133203','release':'2026-07-24'},{'name':'Prefeitura de Orindiúva','role':'Croqui urbanístico consultado para comparação; fevereiro/2021','url':'https://orindiuva.sp.gov.br/wp-content/uploads/2022/04/MAPA-DA-CIDADE-BAIRROS-Atualizado-Model.pdf'}],'visualReferenceRevision':visual_details['revision'],'syntheticBuildings':0,'limitations':'Footprints are machine detections, not a cadastral survey. Heights, roof colors and facades are illustrative. Individual trees are decorative within OSM parks/tree rows, streets and ESA 2021 tree-cover areas. Park paths and regional roof materials are schematic, refined from user-supplied aerial reference images. Landcover resolution is 10 m and may be outdated. No imagery files are embedded or redistributed; building and road outlines remain from OSM/Microsoft.'}
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]

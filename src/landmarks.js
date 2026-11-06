@@ -9,7 +9,16 @@ export function drawLandmark(ctx,area,project,scale){
  const circle=(u,v,r,fill,stroke=null,width=.3)=>shape(Array.from({length:48},(_,i)=>{const t=i*Math.PI/24;return uv(u+Math.cos(t)*r/frame.width,v+Math.sin(t)*r/frame.height)}),fill,stroke,width);
  const outline=area.points.map(p=>project(p));
  ctx.save();ctx.beginPath();outline.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.clip();ctx.lineJoin='round';ctx.lineCap='round';
- if(area.kind==='pitch'&&area.sport==='soccer'){
+ if(area.visual?.pattern==='church-square'){
+  shape(outline,'#cfc8b7','#b8b6a4',.4);
+  const fr=area.visual.churchFrame,toWorld=(x,y)=>fr.origin.map((n,i)=>n+fr.right[i]*x+fr.forward[i]*y),q=(x,y,z=0)=>project(toWorld(x,y),z);
+  const slab=(x,y,w,h,c)=>shape([q(x,y),q(x+w,y),q(x+w,y+h),q(x,y+h)],c);
+  slab(-4,14,8,58,'#dfd9c8');
+  for(let y=-24;y<72;y+=8){ctx.beginPath();ctx.moveTo(...q(-42,y));ctx.lineTo(...q(42,y));ctx.strokeStyle='#a7a99835';ctx.lineWidth=.12;ctx.stroke()}
+  for(const x of [-31,-22,26,34])for(const y of [-19,2,22,43,62]){shape(Array.from({length:24},(_,i)=>q(x+Math.cos(i*Math.PI/12)*4.6,y+Math.sin(i*Math.PI/12)*3.7)),'#9da67b','#dcd4be',.6)}
+  for(const x of [-13,14])for(const y of [32,52,65]){slab(x-1.6,y,3.2,.7,'#887957');slab(x-1.6,y+.8,3.2,.45,'#aa9468')}
+  for(const x of [-12,12])for(const y of [22,48,66]){ctx.beginPath();ctx.moveTo(...q(x,y));ctx.lineTo(...q(x,y,5));ctx.strokeStyle='#657168';ctx.lineWidth=.26;ctx.stroke();const top=q(x,y,5);shape([[top[0]-.5,top[1]],[top[0],top[1]-.7],[top[0]+.5,top[1]],[top[0],top[1]+.4]],'#ede5c4','#6b7262',.15)}
+ }else if(area.kind==='pitch'&&area.sport==='soccer'){
   shape(outline,'#6f975d');for(let i=0;i<10;i+=2)rect(i/10,0,.1,1,'#80a26b');
   const ink='#e4e8c6';rect(.045,.065,.91,.87,null,ink);line([[.5,.065],[.5,.935]],ink,.4);circle(.5,.5,Math.min(9,frame.height*.14),null,ink,.45);circle(.5,.5,.45,ink);
   for(const end of [0,1]){const x=end?.955:.045,sign=end?-1:1;line([[x,.25],[x+sign*.15,.25],[x+sign*.15,.75],[x,.75]],ink,.4);line([[x,.39],[x+sign*.055,.39],[x+sign*.055,.61],[x,.61]],ink,.4);line([[x,.45],[x-sign*.022,.45],[x-sign*.022,.55],[x,.55]],'#e9e7da',.6)}

@@ -66,6 +66,12 @@ Código do aplicativo sob licença MIT; dados e fontes mantêm suas licenças pr
 
 A análise do TinyRJ com REA está registrada em [docs/reference-analysis.md](docs/reference-analysis.md). Vancouver também foi consultado como referência visual. O projeto mantém renderização própria e dados geográficos de Orindiúva.
 
-O mapa redesenha sob demanda: sol e nuvens não mantêm animação contínua. A chuva tem limite de 24 atualizações por segundo e para com a aba oculta. Um índice espacial seleciona os objetos visíveis mantendo a ordem de sobreposição. Geometria estática, copas e texturas de telhas são reutilizadas. Os telhados inclinados preservam o contorno original, com elevação ilustrativa.
+O mapa base redesenha sob demanda. Trânsito e chuva usam camadas separadas, com limite de 24 atualizações por segundo e pausa em aba oculta. Com o trânsito desativado e sem chuva, sol e nuvens não mantêm animação contínua. O trânsito é decorativo: segue os segmentos e sentidos das ruas mapeadas, sem representar veículos, viagens, sinais ou congestionamentos reais. Um índice espacial seleciona os objetos visíveis mantendo a ordem de sobreposição. Geometria estática, copas e texturas de telhas são reutilizadas. Os telhados inclinados preservam o contorno original, com elevação ilustrativa.
 
 Para medir localmente, abra o servidor de desenvolvimento com `?profile=1&time=720`: o console registra duração dos desenhos e contagem de quadros/efeitos a cada dois segundos. A instrumentação fica desativada na publicação.
+
+## Revisão pelas fotos do autor
+
+As panorâmicas de abril de 2026 fornecidas pelo usuário orientaram a igreja e a Praça Maria Dias. A maquete da igreja tem cobertura branca em cruz, torre na entrada noroeste, relógio, cornijas, arcos e pináculo. Os volumes adicionais são estimativas visuais registradas em `building.visual`; o contorno Microsoft original permanece intacto e aparece na vista de planta. A praça recebeu piso claro e adro livre. Árvores decorativas são afastadas de construções, ruas e dos volumes da igreja. O estilo pixelado anterior das copas foi recuperado.
+
+A interface usa uma barra de ferramentas lateral e minimapa navegável, inspirados nas referências. Nomes de ruas e lugares ficam em Ajustes; o botão do carro ativa/desativa o trânsito. Em acessibilidade com redução de movimento, os carros permanecem estáticos.
