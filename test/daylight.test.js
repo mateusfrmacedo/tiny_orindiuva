@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {daylight,localMinutes,formatTime,parseSceneTime} from '../src/daylight.js';
+test('full-day lighting has dark nights, clear noon and gradual transitions',()=>{assert.equal(daylight(720).opacity,0);assert.ok(daylight(0).opacity>.7);assert.ok(daylight(1320).lamps>.9);assert.deepEqual(daylight(0),daylight(1440));for(let m=1;m<=1440;m++){const a=daylight(m-1),b=daylight(m);assert.ok(Math.abs(a.opacity-b.opacity)<.02);assert.ok(Math.abs(a.lamps-b.lamps)<.02);assert.ok(b.color.every(c=>c>=0&&c<=255));}assert.equal(daylight(360).label,'Amanhecer');assert.equal(daylight(1080).label,'Pôr do sol');});
+test('scene clock uses São Paulo regardless of host timezone and accepts shared times safely',()=>{assert.equal(localMinutes(new Date('2026-11-06T03:30:00Z')),30);assert.equal(localMinutes(new Date('2026-11-06T21:30:00Z')),1110);assert.equal(formatTime(5),'00:05');assert.equal(formatTime(1440),'24:00');for(const bad of [null,'','oops','-1','1441','Infinity'])assert.equal(parseSceneTime(bad),null);assert.equal(parseSceneTime('1080'),1080);});

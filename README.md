@@ -12,7 +12,8 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 - Toque em uma construção para conferir fonte e área aproximada.
 - Arraste, zoom, gestos de pinça, teclado e busca por rua/lugar.
 - Links compartilháveis que preservam a câmera.
-- Clima atual da Open-Meteo, atualizado a cada 15 minutos; chuva e iluminação acompanham as condições. Modos manuais permitem experimentar sol, chuva e noite.
+- Linha do tempo de 24 horas com amanhecer, dia, pôr do sol, noite e janelas iluminadas. O botão **Agora** acompanha o relógio de Orindiúva (`America/Sao_Paulo`); links com `?time=1320` preservam uma hora escolhida em minutos (22h). A iluminação usa transições artísticas, sem calcular horários astronômicos de nascer/pôr do sol.
+- Clima atual da Open-Meteo, atualizado a cada 15 minutos; chuva e iluminação acompanham as condições. Modos manuais permitem experimentar tempo aberto e chuva, independentemente da hora da cena.
 - Layout responsivo, nomes em português e respeito à preferência por movimento reduzido.
 
 ## Executar
