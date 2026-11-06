@@ -4,8 +4,10 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 
 **[Explorar o mapa](https://mateusfrmacedo.github.io/tiny_orindiuva/)**
 
-- Ruas e 18 lugares reais a partir de um recorte do OpenStreetMap.
-- Casas, árvores e igreja ilustradas em Canvas 2D, sem imagens do projeto de referência.
+- 220 segmentos de ruas/caminhos e 18 lugares a partir de um recorte do OpenStreetMap.
+- 2.317 contornos de edificações (2.309 Microsoft/Bing e 8 OpenStreetMap), sem preenchimento de casas fictícias.
+- Vista isométrica e vista de planta com norte para cima; botão para enquadrar a área urbana.
+- Toque em uma construção para conferir fonte e área aproximada.
 - Arraste, zoom, gestos de pinça, teclado e busca por rua/lugar.
 - Links compartilháveis que preservam a câmera.
 - Clima atual da Open-Meteo, atualizado a cada 15 minutos; chuva e iluminação acompanham as condições. Modos manuais permitem experimentar sol, chuva e noite.
@@ -26,15 +28,25 @@ O build estático fica em `dist/`. O workflow `.github/workflows/deploy.yml` pub
 
 ## Cartografia e limites
 
-`public/data/orindiuva.osm` é um recorte obtido da API oficial do OpenStreetMap em 6 de novembro de 2026. Ruas, praças e lugares usam coordenadas reais. As 1.576 casas adicionadas e as árvores são preenchimento artístico determinístico, não levantamento de imóveis. A igreja é uma representação estilizada no ponto cadastrado, não um modelo arquitetônico. As informações dos lugares refletem a cobertura da comunidade OSM e podem estar incompletas.
+`public/data/orindiuva.osm` é um recorte obtido da API oficial do OpenStreetMap em 6 de novembro de 2026. Ruas, praças, caminhos e lugares preservam as coordenadas da base. `public/data/buildings-microsoft.geojson` é um recorte do conjunto aberto Microsoft Global ML Building Footprints (Bing), quadkey `210133203`, distribuição `2026-07-24`.
 
-Para recompilar `public/data/map.json`, use Python 3 com `shapely` instalado e execute `python scripts/prepare-map.py`. O recorte está incluído, portanto o mapa não depende de chamadas ao OSM durante a navegação. Não existe backend nem chave secreta.
+Os contornos preservam todos os vértices, orientações e formatos das geometrias de origem, inclusive edifícios côncavos. Polígonos Microsoft que duplicam construções OSM são substituídos pelas geometrias OSM. Nenhuma casa é gerada para preencher quadras. Não se trata de cadastro imobiliário: as detecções automáticas podem omitir ou confundir construções e a data da distribuição não é a data das imagens.
+
+Não há alturas disponíveis para os contornos Microsoft desse recorte. A elevação padrão de 4,5 m e a igreja estilizada são escolhas visuais, não medições. Fachadas, cores e tipos de telhado também são ilustrativos. A cobertura arbórea e a água usam um recorte do ESA WorldCover 2021 v200, com resolução de 10 metros e simplificação dos polígonos. É um retrato de 2021, sujeito a desatualização. Árvores decorativas ficam restritas às áreas dessa classificação, praças e linhas de árvores mapeadas; sua localização individual não é um inventário real. Terrenos sem informação ficam neutros, sem gerar talhões agrícolas imaginários.
+
+Google Maps, Apple Maps e Bing Maps foram consultados visualmente para comparar a configuração geral da cidade. O croqui urbanístico da prefeitura (fevereiro/2021) também foi consultado. Nenhum tile, imagem de satélite, fachada do Street View ou contorno digitizado de Google/Apple é distribuído pelo aplicativo. A geometria vem dos conjuntos abertos identificados acima. Para reprodução exata das fachadas, seriam necessárias fotos próprias/autorizadas e medição complementar.
+
+Para recompilar `public/data/map.json`, use Python 3 com `shapely` instalado e execute `python scripts/prepare-map.py`. O recorte ESA foi obtido com `scripts/fetch-landcover.py` (requer rasterio). Os recortes estão incluídos; o mapa não depende de chamadas aos fornecedores durante a navegação. Não existe backend nem chave secreta. Os testes verificam a preservação de todos os vértices Microsoft e a reversibilidade das projeções.
 
 A API meteorológica oferece condições de modelo para a grade próxima a Orindiúva, não uma estação na praça. Se estiver indisponível, o site informa a falha e mantém os modos ilustrativos disponíveis. Dados de clima não são inventados.
 
 ## Créditos e licenças
 
 - Dados cartográficos: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). O recorte OSM e a base derivada `map.json` são distribuídos sob ODbL.
+- Edificações: [Microsoft Global ML Building Footprints / Bing](https://github.com/microsoft/GlobalMLBuildingFootprints), [CDLA Permissive 2.0](https://cdla.dev/permissive-2-0/). A licença está em `public/data/MICROSOFT-LICENSE.txt`; o recorte Microsoft independente mantém essa licença.
+- Cobertura do solo: © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Recorte e simplificação de cobertura arbórea/água. [Acesso oficial](https://esa-worldcover.org/en/data-access).
+- Referências de apresentação: [IsoCities](https://isocities.agenturl.dev/) e [Isometric NYC](https://github.com/cannoneyed/isometric-nyc). Nenhum código ou asset desses projetos foi incorporado.
+- Referência urbana: [croqui da Prefeitura de Orindiúva, fevereiro/2021](https://orindiuva.sp.gov.br/wp-content/uploads/2022/04/MAPA-DA-CIDADE-BAIRROS-Atualizado-Model.pdf).
 - Clima: [Open-Meteo](https://open-meteo.com/), dados sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). A API pública gratuita destina-se a uso não comercial, conforme os termos do serviço.
 - Fontes: DM Sans e Space Mono, via Google Fonts, sob SIL Open Font License.
 - Referência visual: Tiny SP. Nenhum código ou asset do Tiny SP foi incorporado.
