@@ -1,11 +1,12 @@
+import {drawLandmark} from './landmarks.js';
 import {daylight,localMinutes,formatTime,parseSceneTime} from './daylight.js';
-import {treeSprite,grainPattern} from './pixel-art.js';
+import {treeSprite,palmSprite,grainPattern} from './pixel-art.js';
 import {project,unproject,contains,toLonLat} from './geometry.js';
 import {atmosphere,weatherLabel,weatherURL} from './weather.js';
 const $=id=>document.getElementById(id),canvas=$('map'),ctx=canvas.getContext('2d',{alpha:false}),fx=$('atmosphere'),f=fx.getContext('2d');
 let plan=new URLSearchParams(location.search).get('view')==='plan';
 const mapPixelRatio=1;
-const textures=Object.fromEntries(['grass','asphalt','concrete','forest'].map(k=>[k,grainPattern(ctx,k)]));
+const textures=Object.fromEntries(['grass','asphalt','concrete','forest','courtyard'].map(k=>[k,grainPattern(ctx,k)]));
 let W=innerWidth,H=innerHeight,scale=2.45,camera=[0,0],model,dirty=true,mode='sun',liveMode='sun',weather=null,selected=null,frame=0,pointers=new Map(),gesture=null;
 let sceneMinutes=parseSceneTime(new URLSearchParams(location.search).get('time'));
 let lighting=daylight(sceneMinutes??localMinutes());
@@ -16,20 +17,20 @@ function screen(p){const q=iso(p);return [(q[0]-camera[0])*scale+W/2,(q[1]-camer
 function polygon(points,fill,stroke='#4b4d3b',width=.5){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
 function ground(points,fill,stroke){polygon(points.map(p=>iso(p)),fill,stroke)}
 function path(points,color,width,dash=[]){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...iso(p)):ctx.moveTo(...iso(p)));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
-const roofColors=[['#bb7650','#874733'],['#cc8c5c','#9d593d'],['#d8b88b','#a58c68'],['#9faaa1','#6f827a'],['#ac603e','#773b2c'],['#c6bea3','#948d77']];
-function roofPlane(points,color,seed){polygon(points,color,'#594f3f',.4);if(scale<1.4)return;ctx.save();ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.clip();let angle=Math.atan2(points[1][1]-points[0][1],points[1][0]-points[0][0]);ctx.translate(...points[0]);ctx.rotate(angle);const extent=Math.max(...points.map(p=>Math.hypot(p[0]-points[0][0],p[1]-points[0][1])))+3;ctx.lineWidth=.14;for(let y=-extent;y<extent;y+=.9){ctx.strokeStyle='#402e242a';ctx.beginPath();ctx.moveTo(-extent,y);ctx.lineTo(extent,y);ctx.stroke();ctx.strokeStyle='#fff0cb24';ctx.beginPath();ctx.moveTo(-extent,y+.2);ctx.lineTo(extent,y+.2);ctx.stroke();if(seed%6!==3)for(let x=-extent+(Math.round(y/.9)%2)*.6;x<extent;x+=1.4){ctx.fillStyle='#3d2b271c';ctx.fillRect(x,y,.15,.55)}}ctx.restore()}
+const roofColors=[['#bb7650','#874733'],['#bd6f4d','#8e4b35'],['#c5835c','#995a40'],['#b76947','#884630'],['#ac603e','#773b2c'],['#ce9165','#a26746'],['#dbd9cc','#a6afa7'],['#b3b9b1','#84948c']];
+function roofPlane(points,color,seed,metal=false){polygon(points,color,'#594f3f',.4);if(scale<1.4)return;ctx.save();ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.clip();let angle=Math.atan2(points[1][1]-points[0][1],points[1][0]-points[0][0]);ctx.translate(...points[0]);ctx.rotate(angle);const extent=Math.max(...points.map(p=>Math.hypot(p[0]-points[0][0],p[1]-points[0][1])))+3;ctx.lineWidth=.14;for(let y=-extent;y<extent;y+=.9){ctx.strokeStyle='#402e242a';ctx.beginPath();ctx.moveTo(-extent,y);ctx.lineTo(extent,y);ctx.stroke();ctx.strokeStyle='#fff0cb24';ctx.beginPath();ctx.moveTo(-extent,y+.2);ctx.lineTo(extent,y+.2);ctx.stroke();if(!metal)for(let x=-extent+(Math.round(y/.9)%2)*.6;x<extent;x+=1.4){ctx.fillStyle='#3d2b271c';ctx.fillRect(x,y,.15,.55)}}ctx.restore()}
 function building(b,index){const pts=b.points,h=b.h,base=pts.map(p=>iso(p)),top=pts.map(p=>iso(p,h));
- const col=roofColors[b.roof%6];
+ const col=roofColors[b.roof%roofColors.length];
  if(plan){polygon(base,b.landmark?'#d9b761':col[0],'#696252',.65);for(const hole of b.holes||[])ground(hole,'#c7c59f','#696252');return}
  polygon(base.map(p=>[p[0]+h*.6,p[1]+h*.35]),'#34483230',null);
  for(let i=0;i<pts.length;i++){let j=(i+1)%pts.length;if(base[j][0]>=base[i][0])continue;
  polygon([base[i],base[j],top[j],top[i]],b.landmark?'#ecd38f':index%7===0?'#c3c7b2':i%2?'#c3b89a':'#e6d8b6','#565645',.35);ctx.beginPath();ctx.moveTo(top[i][0],top[i][1]+.6);ctx.lineTo(top[j][0],top[j][1]+.6);ctx.strokeStyle='#f1e4c7';ctx.lineWidth=.5;ctx.stroke();
  const a=top[i],d=top[j],len=Math.hypot(d[0]-a[0],d[1]-a[1]);for(let v=2;v<len-1;v+=3.8){const t=v/len,x=a[0]+(d[0]-a[0])*t,y=a[1]+(d[1]-a[1])*t;polygon([[x,y+1.3],[x+1.1,y+1.3+(d[1]-a[1])/len*1.1],[x+1.1,y+2.7+(d[1]-a[1])/len*1.1],[x,y+2.7]],lighting.lamps>.4?'#f4cb70':index%3===0?'#527681':'#4a615c','#e1d3ae',.12)}}
- if(pts.length===4&&!b.holes?.length){if(Math.hypot(pts[1][0]-pts[0][0],pts[1][1]-pts[0][1])>Math.hypot(pts[2][0]-pts[1][0],pts[2][1]-pts[1][1]))top.push(top.shift());const mid1=[(top[0][0]+top[1][0])/2,(top[0][1]+top[1][1])/2-1.5],mid2=[(top[2][0]+top[3][0])/2,(top[2][1]+top[3][1])/2-1.5];roofPlane([top[0],mid1,mid2,top[3]],col[0],index);roofPlane([mid1,top[1],top[2],mid2],col[1],index);for(let t=.15;t<1;t+=.17){const a=[top[0][0]+(top[3][0]-top[0][0])*t,top[0][1]+(top[3][1]-top[0][1])*t],b=[mid1[0]+(mid2[0]-mid1[0])*t,mid1[1]+(mid2[1]-mid1[1])*t];ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle='#f7d5a533';ctx.lineWidth=.35;ctx.stroke()}}
- else{roofPlane(top,col[0],index);for(const hole of b.holes||[])polygon(hole.map(p=>iso(p,h)),'#b6b59a','#696252');}
+ if(pts.length===4&&!b.holes?.length){if(Math.hypot(pts[1][0]-pts[0][0],pts[1][1]-pts[0][1])>Math.hypot(pts[2][0]-pts[1][0],pts[2][1]-pts[1][1]))top.push(top.shift());const mid1=[(top[0][0]+top[1][0])/2,(top[0][1]+top[1][1])/2-1.5],mid2=[(top[2][0]+top[3][0])/2,(top[2][1]+top[3][1])/2-1.5];roofPlane([top[0],mid1,mid2,top[3]],col[0],index,b.roofMaterial==='metal');roofPlane([mid1,top[1],top[2],mid2],col[1],index,b.roofMaterial==='metal');for(let t=.15;t<1;t+=.17){const a=[top[0][0]+(top[3][0]-top[0][0])*t,top[0][1]+(top[3][1]-top[0][1])*t],b=[mid1[0]+(mid2[0]-mid1[0])*t,mid1[1]+(mid2[1]-mid1[1])*t];ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle='#f7d5a533';ctx.lineWidth=.35;ctx.stroke()}}
+ else{roofPlane(top,col[0],index,b.roofMaterial==='metal');for(const hole of b.holes||[])polygon(hole.map(p=>iso(p,h)),'#b6b59a','#696252');}
  if(b.landmark==='church'){const c=b.centroid,a=iso(c,24);ctx.fillStyle='#ead18f';ctx.fillRect(a[0]-2.7,a[1],5.4,12);ctx.strokeStyle='#696044';ctx.lineWidth=.7;ctx.strokeRect(a[0]-2.7,a[1],5.4,12);ctx.fillStyle='#6d7465';ctx.fillRect(a[0]-1,a[1]+3,2,3);polygon([[a[0]-3.5,a[1]],[a[0],a[1]-5],[a[0]+3.5,a[1]]],'#ae784d');ctx.beginPath();ctx.moveTo(a[0],a[1]-9);ctx.lineTo(a[0],a[1]-4);ctx.moveTo(a[0]-1.6,a[1]-7.5);ctx.lineTo(a[0]+1.6,a[1]-7.5);ctx.stroke()}
 }
-function tree(t,index){const [x,y,r]=t,p=iso([x,y]);ctx.fillStyle='#223a3033';ctx.beginPath();ctx.ellipse(p[0]+r*.6,p[1]+r*.12,r*1.35,r*.6,0,0,Math.PI*2);ctx.fill();ctx.imageSmoothingEnabled=false;ctx.drawImage(treeSprite(index),p[0]-r*1.12,p[1]-r*2.9,r*2.24,r*3.05)}
+function tree(t,index){const [x,y,r]=t,p=iso([x,y]);ctx.fillStyle='#223a3033';ctx.beginPath();ctx.ellipse(p[0]+r*.6,p[1]+r*.12,r*1.35,r*.6,0,0,Math.PI*2);ctx.fill();ctx.imageSmoothingEnabled=false;ctx.drawImage(t[3]==='palm'?palmSprite():treeSprite(index),p[0]-r*1.12,p[1]-r*(t[3]==='palm'?4:2.9),r*2.24,r*(t[3]==='palm'?4.15:3.05))}
 function surface(items,fill,stroke=null,width=.4){for(const area of items||[]){ctx.beginPath();for(const ring of [area.points,...(area.holes||[])]){ring.forEach((p,i)=>{const q=iso(p);i?ctx.lineTo(...q):ctx.moveTo(...q)});ctx.closePath()}ctx.fillStyle=fill;ctx.fill('evenodd');if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}}
 function drawRoads(){const surfaces=model.roadSurfaces;surface(surfaces.sidewalk,plan?'#d5d1be':textures.concrete,'#7c826f',.3);surface(surfaces.pedestrian,'#d6cba9');surface(surfaces.unpaved,'#b59a76');surface(surfaces.asphalt,plan?'#7c8580':textures.asphalt,'#565f58',.2);
  for(const r of model.roads){if(r.width>=10&&r.kind!=='secondary_link'&&!r.bridge)path(r.points,'#d4c491',.25,[3.5,5]);}
@@ -51,7 +52,8 @@ function buildObjects(){const groups=new Map();for(const r of model.roads){if(!r
 function draw(){ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=plan?'#e5e7d4':textures.grass;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.setTransform(mapPixelRatio,0,0,mapPixelRatio,0,0);ctx.translate(W/2-camera[0]*scale,H/2-camera[1]*scale);ctx.scale(scale,scale);ctx.lineJoin='round';ctx.lineCap='round';
  // Unmapped terrain stays neutral instead of inventing agricultural parcels.
  for(const a of model.landcover||[]){ground(a.points,a.kind==='forest'?textures.forest:'#79a8aa',null);for(const hole of a.holes||[])ground(hole,plan?'#e5e7d4':textures.grass,null)}
- for(const a of model.areas){const c={residential:'#c7c59f',park:'#a0b875',pitch:'#789b68',swimming_pool:'#82b6bb',farmland:'#b4b581',forest:'#718957',water:'#87b2aa'}[a.kind];if(c)ground(a.points,c,'#7b8b6333');if(a.kind==='pitch'){const p=a.points.map(p=>iso(p));polygon(p,'#7a9d68','#d6dfb4',1);}}
+ surface(model.urbanBlocks,plan?'#c9bea5':textures.courtyard);
+ for(const a of model.areas){const c={residential:'#c7c59f',park:'#9caf73',pitch:'#789b68',swimming_pool:'#82b6bb',farmland:'#b4b581',forest:'#718957',water:'#87b2aa',cemetery:'#c7c2ad',depot:'#bb8e6c',village_green:'#8ca16a',grass:'#90a46f'}[a.kind];if(c)ground(a.points,c,'#7b8b6333');drawLandmark(ctx,a,iso,scale)}
  for(const line of model.waterways||[]){if(line.kind!=='tree_row')path(line.points,'#79a7ac',3)}
  drawRoads();
  for(const o of objects){if(plan&&!o.b)continue;const p=screen(o.p),pad=o.b?Math.max(o.b.bounds[2]-o.b.bounds[0],o.b.bounds[3]-o.b.bounds[1])*scale+50:50;if(p[0]>-pad&&p[0]<W+pad&&p[1]>-pad&&p[1]<H+pad)o.draw()}

@@ -1,0 +1,29 @@
+{
+  "revision": "user-aerials-2026-11-06",
+  "description": "Design guidance from eight user-supplied Apple Maps aerial screenshots. Existing OSM/Microsoft geometry remains authoritative. Internal park layouts, roof materials and individual trees are schematic, not surveyed.",
+  "parks": {
+    "228066431": {
+      "pattern": "circular-garden",
+      "reference": "Captura de Tela 2026-11-06 às 17.47.48.png",
+      "confidence": "visual match to mapped park location; internal paths are schematic"
+    },
+    "425624221": {
+      "pattern": "fountain-garden",
+      "reference": "Captura de Tela 2026-11-06 às 17.47.24.png",
+      "confidence": "provisional spatial correspondence; schematic interior; official name not assigned",
+      "fountainUV": [
+        0.67324424,
+        0.42985979
+      ],
+      "fountainRadius": 4.0,
+      "reclassifyBuilding": "ms-6a94de2897296347",
+      "correctionReason": "Small footprint inside the mapped park corresponds visually to the circular fountain in the supplied aerial reference, not a house. Original footprint retained under referenceCorrections."
+    },
+    "425624220": {
+      "pattern": "formal-garden",
+      "reference": "Captura de Tela 2026-11-06 às 17.47.19.png",
+      "confidence": "rectangular park matched by surrounding streets and internal roof footprints; schematic paths; awaiting owner name confirmation",
+      "lightRoofs": true
+    }
+  }
+}
