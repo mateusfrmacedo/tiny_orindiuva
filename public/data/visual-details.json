@@ -10,19 +10,22 @@
     "425624221": {
       "pattern": "fountain-garden",
       "reference": "Captura de Tela 2026-11-06 às 17.47.24.png",
-      "confidence": "provisional spatial correspondence; schematic interior; official name not assigned",
+      "confidence": "park identity and fountain confirmed by municipal croqui and tourism guide; interior paths remain schematic",
       "fountainUV": [
         0.67324424,
         0.42985979
       ],
       "fountainRadius": 4.0,
       "reclassifyBuilding": "ms-6a94de2897296347",
-      "correctionReason": "Small footprint inside the mapped park corresponds visually to the circular fountain in the supplied aerial reference, not a house. Original footprint retained under referenceCorrections."
+      "correctionReason": "Small footprint inside the mapped park corresponds visually to the circular fountain in the supplied aerial reference, not a house. Original footprint retained under referenceCorrections.",
+      "officialName": "Praça Irinéia Figueiredo Barbosa",
+      "nameSource": "Croqui urbanístico fornecido pelo usuário e Prefeitura de Orindiúva, Onde Visitar",
+      "nameSourceURL": "https://orindiuva.sp.gov.br/wp-content/uploads/2018/07/onde-visitar.pdf"
     },
     "425624220": {
       "pattern": "formal-garden",
       "reference": "Captura de Tela 2026-11-06 às 17.47.19.png",
-      "confidence": "rectangular park matched by surrounding streets and internal roof footprints; schematic paths; awaiting owner name confirmation",
+      "confidence": "Praça Jair Nunes dos Santos confirmed by municipal croqui; surrounding roads and roof footprints retained; internal paths remain schematic",
       "lightRoofs": true
     }
   }

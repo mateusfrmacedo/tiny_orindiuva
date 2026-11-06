@@ -91,6 +91,9 @@ for a in areas:
  a['frame']={'origin':list(origin),'u':u,'v':v,'width':math.hypot(*u),'height':math.hypot(*v)}
  if a['id'] in visual_details['parks']:
   a['visual']=visual_details['parks'][a['id']]
+  if a['visual'].get('officialName'):
+   a['name']=a['visual']['officialName']
+   if not any(p['id']==a['id'] for p in places):places.append({'id':a['id'],'type':'way','name':a['name'],'kind':'park','point':list(Polygon(a['points']).centroid.coords)[0],'street':'Praça identificada no croqui urbanístico e no guia municipal Onde Visitar.'})
   if a['visual'].get('lightRoofs'):
    for b in buildings:
     if Polygon(a['points']).contains(Point(b['centroid'])):b['roof']=6;b['roofMaterial']='metal'

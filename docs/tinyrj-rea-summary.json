@@ -1,0 +1,28 @@
+{
+  "source": "https://tinyrj.com/embed.html",
+  "date": "2026-11-06",
+  "tool": "rea-agents@6.8.0 analyze-javascript-application",
+  "evidence_id": "ev_c79d2767bd4f1380447bbd0585c4146a4fbb7a8a8700257045144e62c2322c85",
+  "root_artifact_sha256": "fd26bd236fafdef9d440a863013b552e2f6b1c2a96d529f2b769cfa10348c311",
+  "statistics": {
+    "relevant_files": 2,
+    "nested_asar_containers": 0,
+    "text_bytes_read": 172000,
+    "invalid_utf8_files": 0,
+    "parsed_javascript_files": 2,
+    "skipped_javascript_files": 0,
+    "visited_ast_nodes": 32274,
+    "findings": 28,
+    "modules": 0,
+    "parse_failures": 0
+  },
+  "scope": "Two public inline scripts extracted from embed.html; static analysis only. Does not include server, imported modules, image generation pipeline or tile artwork.",
+  "limitations": [
+    "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+    "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+    "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+    "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+    "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+    "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+  ]
+}
