@@ -3,6 +3,7 @@ No synthetic buildings or parcel infill. Python 3 + shapely required.
 """
 import xml.etree.ElementTree as ET
 import json,math,random,hashlib
+from collections import defaultdict,Counter
 from pathlib import Path
 from shapely.geometry import Polygon,Point,shape,LineString
 from shapely.ops import unary_union
@@ -21,7 +22,7 @@ for e in r:
    kind=t['highway'];default=2 if kind in ['footway','path','steps'] else 4 if kind in ['service','track'] else 10 if kind in ['primary','secondary','tertiary'] else 7
    try:width=float(t.get('width',default))
    except ValueError:width=default
-   roads.append({'id':eid,'points':pts,'name':t.get('name',''),'kind':kind,'width':width,'surface':t.get('surface','unknown'),'oneway':t.get('oneway')=='yes'})
+   roads.append({'nodes':[n.attrib['ref'] for n in e.findall('nd')],'layer':int(t.get('layer','0')),'bridge':t.get('bridge')=='yes','access':t.get('access','yes'),'widthSource':'osm' if 'width' in t else 'estimated','id':eid,'points':pts,'name':t.get('name',''),'kind':kind,'width':width,'surface':t.get('surface','unknown'),'oneway':t.get('oneway')=='yes'})
   if 'waterway'in t or t.get('natural')=='tree_row':waterways.append({'points':pts,'kind':t.get('waterway',t.get('natural'))})
   if len(pts)>3 and pts[0]==pts[-1] and any(k in t for k in ['leisure','landuse','building','natural','water']):
    p=Polygon(pts)
@@ -31,12 +32,40 @@ for e in r:
  if t.get('name') and (t.get('leisure')=='park' or t.get('amenity')in ['townhall','place_of_worship','bus_station','school','theatre','post_office']):
   p=nodes[eid] if e.tag=='node' else list(Polygon(pts).centroid.coords)[0] if len(pts)>3 else None
   if p:places.append({'id':eid,'type':e.tag,'name':t['name'],'kind':t.get('amenity',t.get('leisure')),'point':p,'street':t.get('addr:street','')})
+# Paint the whole network in passes. Buffer in geographic metre space BEFORE
+# isometric projection: screen-space strokes distort widths at diagonal junctions.
+def polygons(geom):
+ if geom.is_empty:return []
+ items=[geom] if geom.geom_type=='Polygon' else list(geom.geoms)
+ return [{'points':[[round(x,2),round(y,2)] for x,y in p.exterior.coords[:-1]],'holes':[[[round(x,2),round(y,2)] for x,y in h.coords[:-1]] for h in p.interiors]} for p in items if p.geom_type=='Polygon']
+pedestrian={'footway','path','steps'}
+motor=[r for r in roads if r['kind']not in pedestrian]
+paved=[r for r in motor if r['surface']not in ['unpaved','dirt','ground','gravel']]
+unpaved=[r for r in motor if r not in paved]
+def surfaces(items,extra=0):return polygons(unary_union([LineString(r['points']).buffer(r['width']/2+extra,quad_segs=4,join_style='round') for r in items]))
+road_surfaces={'sidewalk':surfaces(motor,1.25),'asphalt':surfaces(paved),'unpaved':surfaces(unpaved),'pedestrian':surfaces([r for r in roads if r['kind']in pedestrian])}
+# Audit source topology using shared OSM node IDs; never join nearby streets by guess.
+graph=defaultdict(set);node_roads=defaultdict(set);road_by_id={r['id']:r for r in roads}
+for road in roads:
+ for a,b in zip(road['nodes'],road['nodes'][1:]):graph[a].add(b);graph[b].add(a)
+ for n in road['nodes']:node_roads[n].add(road['id'])
+remaining=set(graph);components=[]
+while remaining:
+ stack=[min(remaining)];remaining.remove(stack[0]);component=set(stack)
+ while stack:
+  for v in graph[stack.pop()]:
+   if v in remaining:remaining.remove(v);component.add(v);stack.append(v)
+ ids=sorted({rid for n in component for rid in node_roads[n]})
+ components.append({'nodeCount':len(component),'roads':ids,'kinds':dict(Counter(road_by_id[rid]['kind'] for rid in ids))})
+components.sort(key=lambda c:-c['nodeCount'])
+junctions=[{'node':n,'point':nodes[n],'degree':len(neighbours),'roads':sorted(node_roads[n])} for n,neighbours in graph.items() if len(neighbours)>2]
+network={'nodeCount':len(graph),'edgeCount':sum(map(len,graph.values()))//2,'components':components,'junctions':junctions}
 features=json.loads((ROOT/'public/data/buildings-microsoft.geojson').read_text())['features']
 buildings=[];osm_shapes=[Polygon(b['points']) for b in osm_buildings]
 for f in features:
  props=f['properties'];poly=shape(f['geometry']);pts=ring([xy(*c) for c in f['geometry']['coordinates'][0]]);p=Polygon(pts)
  if not p.is_valid or p.area<9:continue
- # Prefer surveyed OSM outlines wherever they overlap machine detections.
+ # Prefer community-mapped OSM outlines wherever they overlap machine detections.
  if any(p.intersection(o).area/min(p.area,o.area)>.35 for o in osm_shapes):continue
  key=hashlib.sha256(json.dumps(f['geometry'],sort_keys=True).encode()).hexdigest()[:16]
  buildings.append({'id':'ms-'+key,'points':pts,'holes':[ring([xy(*c) for c in hole]) for hole in f['geometry']['coordinates'][1:]],'h':props['height'] if props['height']>0 else 4.5,'heightSource':'microsoft' if props['height']>0 else 'illustrative','roof':int(key[:4],16)%6,'source':'Microsoft/Bing','confidence':round(props.get('confidence',-1),3),'area':round(p.area,1)})
@@ -75,6 +104,6 @@ meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPe
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]
 meta['sources'].append({'name':'ESA WorldCover 2021 v200','role':'Cobertura arbórea e água, resolução 10 m; recorte e simplificação','url':'https://esa-worldcover.org/en/data-access','license':'CC-BY-4.0','attribution':'© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium'})
-model={'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+model={'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
 (ROOT/'public/data/map.json').write_text(json.dumps(model,separators=(',',':'),ensure_ascii=False))
 print(len(roads),'road/path segments;',len(buildings),'real footprint geometries;',len(trees),'decorative trees in mapped cover; zero synthetic buildings')
