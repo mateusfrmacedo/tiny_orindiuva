@@ -10,6 +10,7 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 - Detalhes internos esquemáticos de praças, campos de futebol, tênis, piscinas e cemitério, refinados com referências aéreas fornecidas pelo usuário.
 - Telhados texturizados, sombras e controles compactos inspirados no Tiny SP.
 - Vista isométrica e vista de planta com norte para cima; botão para enquadrar a área urbana.
+- Controle **Aa Nomes** mostra/oculta os nomes das ruas nas duas vistas. Começa oculto para deixar o desenho limpo e salva a preferência no navegador. Em zoom distante, os nomes não aparecem para evitar sobreposição.
 - Busca por rua com enquadramento do traçado completo e destaque em amarelo.
 - Toque em uma construção para conferir fonte e área aproximada.
 - Arraste, zoom, gestos de pinça, teclado e busca por rua/lugar.

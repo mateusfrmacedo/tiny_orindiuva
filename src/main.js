@@ -5,6 +5,8 @@ import {project,unproject,contains,toLonLat} from './geometry.js';
 import {atmosphere,weatherLabel,weatherURL} from './weather.js';
 const $=id=>document.getElementById(id),canvas=$('map'),ctx=canvas.getContext('2d',{alpha:false}),fx=$('atmosphere'),f=fx.getContext('2d');
 let plan=new URLSearchParams(location.search).get('view')==='plan';
+let showStreetNames=false;
+try{showStreetNames=localStorage.getItem('tiny_orindiuva.streetLabels')==='true'}catch{}
 const mapPixelRatio=1;
 const textures=Object.fromEntries(['grass','asphalt','concrete','forest','courtyard'].map(k=>[k,grainPattern(ctx,k)]));
 let W=innerWidth,H=innerHeight,scale=2.45,camera=[0,0],model,dirty=true,mode='sun',liveMode='sun',weather=null,selected=null,frame=0,pointers=new Map(),gesture=null;
@@ -41,10 +43,10 @@ function drawWindowLights(){ctx.globalAlpha=lighting.lamps;ctx.fillStyle='#ffd88
   for(let i=0;i<b.points.length;i++){const j=(i+1)%b.points.length,a=iso(b.points[i],b.h),d=iso(b.points[j],b.h);if(d[0]>=a[0])continue;const len=Math.hypot(d[0]-a[0],d[1]-a[1]);for(let v=2;v<len-1;v+=3.8){if((Math.floor(v)+index)%3===0)continue;const t=v/len,x=a[0]+(d[0]-a[0])*t,y=a[1]+(d[1]-a[1])*t;polygon([[x,y+1.3],[x+1.1,y+1.3+(d[1]-a[1])/len*1.1],[x+1.1,y+2.7+(d[1]-a[1])/len*1.1],[x,y+2.7]],'#ffd88a',null)}}
  }ctx.shadowBlur=0;ctx.globalAlpha=1;
 }
-function drawStreetNames(){if(scale<1.2)return;const seen=new Set(),labels=[];ctx.textAlign='center';ctx.textBaseline='middle';const fontSize=9/scale;ctx.font=`500 ${fontSize}px "DM Sans",sans-serif`;
+function drawStreetNames(){if(!showStreetNames||scale<1.2)return;const seen=new Set(),labels=[];ctx.textAlign='center';ctx.textBaseline='middle';const fontSize=10/scale;ctx.font=`500 ${fontSize}px "DM Sans",sans-serif`;
  for(const road of [...model.roads].sort((a,b)=>b.width-a.width)){if(!road.name||seen.has(road.name)||road.kind==='service')continue;let candidate=null;
   for(let i=1;i<road.points.length;i++){const a=iso(road.points[i-1]),b=iso(road.points[i]),length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(length*scale<ctx.measureText(road.name).width*scale+18)continue;const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2],screen=[(mid[0]-camera[0])*scale+W/2,(mid[1]-camera[1])*scale+H/2];if(screen[0]<80||screen[0]>W-80||screen[1]<85||screen[1]>H-95)continue;if(!candidate||length>candidate.length)candidate={a,b,length,mid,screen}}
-  if(!candidate||labels.some(l=>Math.hypot(l[0]-candidate.screen[0],l[1]-candidate.screen[1])<100))continue;seen.add(road.name);labels.push(candidate.screen);const {a,b,mid}=candidate;let angle=Math.atan2(b[1]-a[1],b[0]-a[0]);if(angle>Math.PI/2||angle< -Math.PI/2)angle+=Math.PI;ctx.save();ctx.translate(...mid);ctx.rotate(angle);ctx.lineWidth=2/scale;ctx.strokeStyle='#49554bc0';ctx.strokeText(road.name,0,0);ctx.fillStyle='#f5f0db';ctx.fillText(road.name,0,0);ctx.restore()}
+  if(!candidate||labels.some(l=>Math.hypot(l[0]-candidate.screen[0],l[1]-candidate.screen[1])<100))continue;seen.add(road.name);labels.push(candidate.screen);const {a,b,mid}=candidate;let angle=Math.atan2(b[1]-a[1],b[0]-a[0]);if(angle>Math.PI/2||angle< -Math.PI/2)angle+=Math.PI;ctx.save();ctx.translate(...mid);ctx.rotate(angle);ctx.lineWidth=1.7/scale;ctx.strokeStyle='#49554bc0';ctx.strokeText(road.name,0,0);ctx.fillStyle='#f5f0db';ctx.fillText(road.name,0,0);ctx.restore()}
 }
 let objects=[],pins=[],roadPlaces=[];
 function buildObjects(){const groups=new Map();for(const r of model.roads){if(!r.name||r.kind==='footway')continue;if(!groups.has(r.name))groups.set(r.name,[]);groups.get(r.name).push(r)}roadPlaces=[...groups].map(([name,roads])=>{const points=roads.flatMap(r=>r.points),bounds=[Math.min(...points.map(p=>p[0])),Math.min(...points.map(p=>p[1])),Math.max(...points.map(p=>p[0])),Math.max(...points.map(p=>p[1]))],center=[(bounds[0]+bounds[2])/2,(bounds[1]+bounds[3])/2],point=points.reduce((best,p)=>Math.hypot(p[0]-center[0],p[1]-center[1])<Math.hypot(best[0]-center[0],best[1]-center[1])?p:best);return {name,kind:'road',type:'way',id:roads[0].id,point,points,bounds}});objects=[...model.buildings.map((b,i)=>({p:b.centroid,b,draw:()=>building(b,i)})),...model.trees.map((t,i)=>({p:t,draw:()=>tree(t,i)}))];objects.sort((a,b)=>(a.p[0]+a.p[1])-(b.p[0]+b.p[1]));
@@ -95,3 +97,7 @@ function saveSceneTime(){const params=new URLSearchParams(location.search);if(sc
 $('time-slider').addEventListener('input',e=>{sceneMinutes=Number(e.target.value);syncTimeline();saveSceneTime()});
 $('time-live').onclick=()=>{sceneMinutes=null;syncTimeline();saveSceneTime()};
 syncTimeline();
+
+function syncStreetLabels(){const button=$('street-labels');button.setAttribute('aria-pressed',String(showStreetNames));button.setAttribute('aria-label',showStreetNames?'Ocultar nomes das ruas':'Mostrar nomes das ruas');button.title=showStreetNames?'Ocultar nomes das ruas':'Mostrar nomes das ruas';dirty=true}
+$('street-labels').onclick=()=>{showStreetNames=!showStreetNames;try{localStorage.setItem('tiny_orindiuva.streetLabels',String(showStreetNames))}catch{}syncStreetLabels();if(showStreetNames&&scale<1.2)toast('Nomes ativados. Aproxime o mapa para lê-los.')};
+syncStreetLabels();
