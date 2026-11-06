@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-06",
+  "adjusted": 748,
+  "evaluated": 2316,
+  "increasedRoadOverlapCases": [],
+  "increasedNeighbourOverlapCases": [],
+  "checkedNeighbourPairs": 1554,
+  "areaToleranceSquareMetres": 0.06,
+  "note": "Independent check against the final corrected polygons. Existing conflicts in source detections are not claimed to be fixed. There are no cadastral parcel boundaries."
+}

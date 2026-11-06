@@ -30,8 +30,281 @@
     },
     "228066426": {
       "pattern": "church-square",
-      "reference": "Owner panoramas CIABIhBVz0X5LAja-lZmmJib2118 and CIABIhBHqt7l3hh02vcpEjow2ERS, April 2026",
-      "confidence": "paved forecourt, cross roof and northwest entrance observed in owner photographs; interior planting and architectural dimensions are schematic"
+      "reference": "Captura de Tela 2026-11-06 às 19.48.45.png; owner April 2026 panoramas",
+      "confidence": "approximate alignment from four square corners in the supplied aerial close-up; roof shape and planting groups interpreted visually, not surveyed",
+      "revision": "owner-aerial-closeup-2026-11-06-194845",
+      "churchModel": {
+        "offset": [
+          5.5,
+          2.5
+        ],
+        "roofOutline": [
+          [
+            -10.5,
+            15
+          ],
+          [
+            10.5,
+            15
+          ],
+          [
+            10.5,
+            5
+          ],
+          [
+            17,
+            5
+          ],
+          [
+            17,
+            -6
+          ],
+          [
+            10.5,
+            -6
+          ],
+          [
+            10.5,
+            -15
+          ],
+          [
+            -10.5,
+            -15
+          ],
+          [
+            -10.5,
+            -6
+          ],
+          [
+            -17,
+            -6
+          ],
+          [
+            -17,
+            5
+          ],
+          [
+            -10.5,
+            5
+          ]
+        ],
+        "eaveHeight": 6.8,
+        "roofPitch": 0.42,
+        "towerBounds": [
+          -2.4,
+          12.8,
+          2.4,
+          17.6
+        ],
+        "towerHeight": 16.5,
+        "spireHeight": 22.5,
+        "crossHeight": 24.1,
+        "referenceAlignment": {
+          "squareCornersPixels": [
+            [
+              664,
+              306
+            ],
+            [
+              371,
+              620
+            ],
+            [
+              841,
+              926
+            ],
+            [
+              1131,
+              578
+            ]
+          ],
+          "method": "Approximate affine comparison against the four existing OSM square corners; offset in original church right/forward metres. Roof heights and perspective displacement are not measured."
+        }
+      },
+      "planting": [
+        {
+          "x": 22.5,
+          "y": 57.5,
+          "radius": 5.8,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 27.5,
+          "y": 52.5,
+          "radius": 5.5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 26.5,
+          "y": 45.5,
+          "radius": 6.5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 21.5,
+          "y": 39.5,
+          "radius": 7,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 22.5,
+          "y": 31.5,
+          "radius": 8,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 25.5,
+          "y": 23.5,
+          "radius": 7.5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 21.5,
+          "y": 17.5,
+          "radius": 7,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 13.5,
+          "y": 23.5,
+          "radius": 8.2,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 11.0,
+          "y": 34.5,
+          "radius": 8.5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 11.5,
+          "y": 44.5,
+          "radius": 7.4,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -38.5,
+          "y": 5.5,
+          "radius": 5.8,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -39.5,
+          "y": 14.5,
+          "radius": 5.6,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -38.5,
+          "y": 26.5,
+          "radius": 5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -39.5,
+          "y": 36.5,
+          "radius": 4.6,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -39.5,
+          "y": 46.5,
+          "radius": 4,
+          "heightFactor": 2.2
+        },
+        {
+          "x": -21.5,
+          "y": -25.5,
+          "radius": 5.3,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -6.5,
+          "y": -24.5,
+          "radius": 4.5,
+          "heightFactor": 2.0
+        },
+        {
+          "x": 12.5,
+          "y": -22.5,
+          "radius": 4.8,
+          "heightFactor": 2.0
+        },
+        {
+          "x": -9.5,
+          "y": 52.5,
+          "radius": 3.4,
+          "heightFactor": 2.2
+        },
+        {
+          "x": -35.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -29.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -23.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -17.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -11.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -5.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": 0.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": 6.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": 12.5,
+          "y": 64,
+          "radius": 2.5,
+          "heightFactor": 1.8
+        },
+        {
+          "x": -9,
+          "y": 31,
+          "radius": 2.5,
+          "kind": "palm",
+          "heightFactor": 3.4
+        },
+        {
+          "x": -21,
+          "y": 37,
+          "radius": 2.3,
+          "kind": "palm",
+          "heightFactor": 3.4
+        }
+      ]
     }
   }
 }

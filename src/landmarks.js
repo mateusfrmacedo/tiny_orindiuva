@@ -10,14 +10,15 @@ export function drawLandmark(ctx,area,project,scale){
  const outline=area.points.map(p=>project(p));
  ctx.save();ctx.beginPath();outline.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.clip();ctx.lineJoin='round';ctx.lineCap='round';
  if(area.visual?.pattern==='church-square'){
-  shape(outline,'#cfc8b7','#b8b6a4',.4);
+  shape(outline,'#c8bea6','#a9ac91',.35);
   const fr=area.visual.churchFrame,toWorld=(x,y)=>fr.origin.map((n,i)=>n+fr.right[i]*x+fr.forward[i]*y),q=(x,y,z=0)=>project(toWorld(x,y),z);
   const slab=(x,y,w,h,c)=>shape([q(x,y),q(x+w,y),q(x+w,y+h),q(x,y+h)],c);
-  slab(-4,14,8,58,'#dfd9c8');
-  for(let y=-24;y<72;y+=8){ctx.beginPath();ctx.moveTo(...q(-42,y));ctx.lineTo(...q(42,y));ctx.strokeStyle='#a7a99835';ctx.lineWidth=.12;ctx.stroke()}
-  for(const x of [-31,-22,26,34])for(const y of [-19,2,22,43,62]){shape(Array.from({length:24},(_,i)=>q(x+Math.cos(i*Math.PI/12)*4.6,y+Math.sin(i*Math.PI/12)*3.7)),'#9da67b','#dcd4be',.6)}
-  for(const x of [-13,14])for(const y of [32,52,65]){slab(x-1.6,y,3.2,.7,'#887957');slab(x-1.6,y+.8,3.2,.45,'#aa9468')}
-  for(const x of [-12,12])for(const y of [22,48,66]){ctx.beginPath();ctx.moveTo(...q(x,y));ctx.lineTo(...q(x,y,5));ctx.strokeStyle='#657168';ctx.lineWidth=.26;ctx.stroke();const top=q(x,y,5);shape([[top[0]-.5,top[1]],[top[0],top[1]-.7],[top[0]+.5,top[1]],[top[0],top[1]+.4]],'#ede5c4','#6b7262',.15)}
+  // The close-up shows broad weathered paving patches, an open forecourt and a
+  // dense canopy on one side, rather than identical circular lawn islands.
+  slab(-37,20,42,43,'#b3b598');slab(-31,23,21,18,'#c9ae90');slab(-31,47,24,16,'#c9b496');slab(-9,18,19,13,'#d0c2a8');
+  shape([[8,16],[29,13],[33,57],[21,62],[8,47]].map(p=>q(...p)),'#a3ad88');slab(-39,62,53,4,'#8f9e77');
+  for(let y=-26;y<69;y+=6){ctx.beginPath();ctx.moveTo(...q(-44,y));ctx.lineTo(...q(36,y));ctx.strokeStyle='#65735c15';ctx.lineWidth=.08;ctx.stroke()}
+  for(const [x,y]of [[-30,27],[-30,43],[4,58]]){slab(x,y,2.8,.55,'#928265');slab(x,y+.7,2.8,.35,'#ac9978')}
  }else if(area.kind==='pitch'&&area.sport==='soccer'){
   shape(outline,'#6f975d');for(let i=0;i<10;i+=2)rect(i/10,0,.1,1,'#80a26b');
   const ink='#e4e8c6';rect(.045,.065,.91,.87,null,ink);line([[.5,.065],[.5,.935]],ink,.4);circle(.5,.5,Math.min(9,frame.height*.14),null,ink,.45);circle(.5,.5,.45,ink);
