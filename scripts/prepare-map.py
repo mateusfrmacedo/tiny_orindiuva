@@ -177,9 +177,12 @@ for area in areas:
  poly=Polygon(area['points']);trees=[t for t in trees if not poly.contains(Point(t[:2]))];fr=area['frame']
  def local(u,v):return [fr['origin'][j]+u*fr['u'][j]+v*fr['v'][j] for j in [0,1]]
  planting=[(.12,.12),(.12,.88),(.88,.12),(.88,.88),(.5,.12),(.5,.88),(.12,.5),(.88,.5)] if pattern=='circular-garden' else [(u,v) for u in [.13,.28,.72,.87] for v in [.18,.82]] if pattern=='fountain-garden' else [(u,v) for u in [.22,.5,.77] for v in [.28,.72]]
- for u,v in planting:
+ if area['visual'].get('plantingUV'):
+  planting=area['visual']['plantingUV']
+ for plant in planting:
+  u,v=plant[:2];radius=plant[2] if len(plant)>2 else 3 if pattern=='circular-garden' else 3.7
   x,y=local(u,v)
-  if poly.contains(Point(x,y)) and not built.contains(Point(x,y)):trees.append([round(x,2),round(y,2),3 if pattern=='circular-garden' else 3.7])
+  if poly.contains(Point(x,y)) and not built.contains(Point(x,y)):trees.append([round(x,2),round(y,2),radius])
  if pattern=='circular-garden':
   for u,v in [(.4,.4),(.6,.4),(.4,.6),(.6,.6)]:
    x,y=local(u,v);trees.append([round(x,2),round(y,2),3.5,'palm'])

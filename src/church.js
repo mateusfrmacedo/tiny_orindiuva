@@ -1,3 +1,4 @@
+import {drawRoof} from './house-details.js';
 // The close-up supplies roof proportions and placement. Heights remain estimates.
 const cache=new WeakMap();
 export function churchLayout(b){
@@ -44,11 +45,16 @@ function openings(layout,face){const {a,c,kind}=face,len=Math.hypot(c[0]-a[0],c[
  else{const count=len>17?3:len>9?2:len>4.5?1:0;for(let i=0;i<count;i++){const t=(i+1)/(count+1);out.push(arch(a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t,1.1,1.1,3.45))}}
  return out;
 }
-export function drawChurch(ctx,b,project,lamps=0){const layout=churchLayout(b),{world,outline,model}=layout;
+export function drawChurch(ctx,b,project,lamps=0,scale=1){const layout=churchLayout(b),{world,outline,model}=layout;
  drawPolygon(ctx,outline.map(v=>{const q=project(v);return [q[0]+4,q[1]+2]}),'#293d2a30');
  for(const face of layout.faces){if((face.kind==='wall'||face.kind==='tower')&&!visible(face,project))continue;
   const projected=face.points.map(p=>project(p,p[2]));drawPolygon(ctx,projected,face.fill,face.kind==='roof'?face.fill:'#909b923d',face.kind==='roof'?.045:.16);
+  if(face.kind==='roof'&&scale>2){ctx.save();ctx.globalAlpha=.3;drawRoof(ctx,face.points,0,project,face.fill,true,scale);ctx.restore()}
   if(face.kind!=='wall'&&face.kind!=='tower')continue;
+  const {a,c}=face,len=Math.hypot(c[0]-a[0],c[1]-a[1]),at=(t,z)=>project(world(a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t),z);
+  drawPolygon(ctx,[at(0,.25),at(1,.25),at(1,.65),at(0,.65)],'#aab8b0');
+  drawPolygon(ctx,[at(0,face.height-.35),at(1,face.height-.35),at(1,face.height),at(0,face.height)],'#f8f4e8','#a3afa83d',.08);
+  if(face.kind==='wall'&&scale>2)for(const t of [.03,.97])drawPolygon(ctx,[at(t-.008,.65),at(t+.008,.65),at(t+.008,face.height-.35),at(t-.008,face.height-.35)],'#f5f3e8');
   for(const arch of openings(layout,face))drawPolygon(ctx,arch.map(p=>project(p,p[2])),lamps>.4?'#e4c797':'#526065','#edf0e7',.22);
   if(face.kind==='tower'){
    const {a,c}=face,center=[(a[0]+c[0])/2,(a[1]+c[1])/2],len=Math.hypot(c[0]-a[0],c[1]-a[1]),u=[(c[0]-a[0])/len,(c[1]-a[1])/len];

@@ -6,3 +6,5 @@
 @media(max-width:370px){.minimap{width:96px}.timeline{left:120px;right:60px;padding:7px}.weather{right:10px}.brand b{font-size:11px}}
 @media(max-height:590px){.map-controls{top:70px;bottom:30px;transform:none;flex-wrap:wrap;width:86px;border-radius:20px;justify-content:center;column-gap:2px}.compass,.map-controls .separator{display:none}.panel,.places-panel,.detail-panel,.settings-panel,.about-panel{right:113px;max-height:calc(100dvh - 100px)}.minimap{width:125px}.timeline{width:250px}.weather-panel{right:18px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+.life-controls{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.map-view-buttons button[aria-pressed]::after{content:"○";float:right;color:#879580}.map-view-buttons button[aria-pressed=true]::after{content:"●";color:#637c4d}

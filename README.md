@@ -4,11 +4,11 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 
 **[Explorar o mapa](https://mateusfrmacedo.github.io/tiny_orindiuva/)**
 
-- 220 segmentos de ruas/caminhos e 18 lugares a partir de um recorte do OpenStreetMap.
+- 220 segmentos de ruas/caminhos e 19 lugares a partir de um recorte do OpenStreetMap.
 - 2.316 contornos de edificações (2.308 Microsoft/Bing e 8 OpenStreetMap), sem preenchimento de casas fictícias.
 - Paleta regional de telhados cerâmicos e coberturas claras, quintais em tons secos, árvores de rua, matas densas e palmeiras em pixel art.
 - Detalhes internos esquemáticos de praças, campos de futebol, tênis, piscinas e cemitério, refinados com referências aéreas fornecidas pelo usuário.
-- Telhados texturizados, sombras e controles compactos inspirados no Tiny SP.
+- Telhados de duas e quatro águas, textura de telhas orientada pela cobertura, chapas, cumeeiras, sombras, portas, garagens e caixilhos voltados para a rua. Fachadas e materiais são interpretações regionais.
 - Vista isométrica e vista de planta com norte para cima; botão para enquadrar a área urbana.
 - Controle **Aa Nomes** mostra/oculta os nomes das ruas nas duas vistas. Começa oculto para deixar o desenho limpo e salva a preferência no navegador. Em zoom distante, os nomes não aparecem para evitar sobreposição.
 - Busca por rua com enquadramento do traçado completo e destaque em amarelo.
@@ -16,7 +16,9 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 - Arraste, zoom, gestos de pinça, teclado e busca por rua/lugar.
 - Links compartilháveis que preservam a câmera.
 - Linha do tempo de 24 horas com amanhecer, dia, pôr do sol, noite e janelas iluminadas. O botão **Agora** acompanha o relógio de Orindiúva (`America/Sao_Paulo`); links com `?time=1320` preservam uma hora escolhida em minutos (22h). A iluminação usa transições artísticas, sem calcular horários astronômicos de nascer/pôr do sol.
-- Clima atual da Open-Meteo, atualizado a cada 15 minutos; chuva e iluminação acompanham as condições. Modos manuais permitem experimentar tempo aberto e chuva, independentemente da hora da cena.
+- Clima atual da Open-Meteo, atualizado a cada 15 minutos; chuva e iluminação acompanham as condições. Modos manuais permitem experimentar tempo aberto, nuvens e chuva, independentemente da hora da cena.
+- Nuvens com volume, sombras suaves e deslocamento pelo vento; pequenos bandos sobre praças e ondulações na fonte. Chuva continua funcionando à noite.
+- Ajustes independentes de nuvens e pássaros e botão **Movimento da cidade** para pausar todos os efeitos.
 - Layout responsivo, nomes em português e respeito à preferência por movimento reduzido.
 
 ## Executar
@@ -58,7 +60,7 @@ A API meteorológica oferece condições de modelo para a grade próxima a Orind
 - Clima: [Open-Meteo](https://open-meteo.com/), dados sob [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). A API pública gratuita destina-se a uso não comercial, conforme os termos do serviço.
 - Fontes: DM Sans e Space Mono, via Google Fonts, sob SIL Open Font License.
 - Referência visual: Tiny SP. Nenhum código ou asset do Tiny SP foi incorporado.
-- O REA foi avaliado como possibilidade de análise. Não foi necessário instalá-lo: a inspeção pública da referência e os dados cartográficos bastaram para esta implementação.
+- Análise anterior do cliente público TinyRJ com REA: [registro e limites](docs/reference-analysis.md).
 
 Código do aplicativo sob licença MIT; dados e fontes mantêm suas licenças próprias.
 
@@ -66,7 +68,7 @@ Código do aplicativo sob licença MIT; dados e fontes mantêm suas licenças pr
 
 A análise do TinyRJ com REA está registrada em [docs/reference-analysis.md](docs/reference-analysis.md). Vancouver também foi consultado como referência visual. O projeto mantém renderização própria e dados geográficos de Orindiúva.
 
-O mapa base redesenha sob demanda. Trânsito e chuva usam camadas separadas, com limite de 24 atualizações por segundo e pausa em aba oculta. Com o trânsito desativado e sem chuva, sol e nuvens não mantêm animação contínua. O trânsito é decorativo: segue os segmentos e sentidos das ruas mapeadas, sem representar veículos, viagens, sinais ou congestionamentos reais. Um índice espacial seleciona os objetos visíveis mantendo a ordem de sobreposição. Geometria estática, copas e texturas de telhas são reutilizadas. Os telhados inclinados preservam o contorno original, com elevação ilustrativa.
+O mapa base redesenha sob demanda. Trânsito e atmosfera usam camadas separadas, com limite de 24 atualizações por segundo e pausa em aba oculta. Nuvens, pássaros e chuva animam apenas a camada de efeitos. **Movimento da cidade** desativado interrompe todas as animações; redução de movimento também mantém a cena estática. Nuvens usam sprites com volume de densidade 3D integrado uma vez e reutilizado: é uma aparência volumétrica em uma cena 2,5D, sem ray marching por quadro ou contexto WebGL adicional. O orçamento limita nuvens a 8, pássaros a 15 e gotas a 240 na tela. O trânsito é decorativo: segue os segmentos e sentidos das ruas mapeadas, sem representar veículos, viagens, sinais ou congestionamentos reais. Um índice espacial seleciona os objetos visíveis mantendo a ordem de sobreposição. Geometria estática, copas e texturas de telhas são reutilizadas. Os telhados inclinados preservam o contorno de exibição selecionado, com elevação ilustrativa. Próximo ao mapa há texturas e detalhes de fachada; longe, esses detalhes deixam de ser desenhados. A chuva usa os códigos WMO e uma intensidade visual limitada a partir da precipitação informada, sem simular uma taxa física exata.
 
 Para medir localmente, abra o servidor de desenvolvimento com `?profile=1&time=720`: o console registra duração dos desenhos e contagem de quadros/efeitos a cada dois segundos. A instrumentação fica desativada na publicação.
 
@@ -74,10 +76,12 @@ Para medir localmente, abra o servidor de desenvolvimento com `?profile=1&time=7
 
 As panorâmicas de abril de 2026 fornecidas pelo usuário orientaram a igreja e a Praça Maria Dias. A maquete da igreja tem cobertura branca em cruz, torre na entrada noroeste, relógio, cornijas, arcos e pináculo. Os volumes adicionais são estimativas visuais registradas em `building.visual`; o contorno Microsoft original permanece intacto nos dados. A igreja tem um contorno visual aproximado, revisado pela captura aérea de 19:48:45, usado também na vista de planta e no minimapa. A praça recebeu piso em tons gastos, adro aberto, a árvore isolada e os agrupamentos assimétricos de copas observados na captura. Árvores decorativas são afastadas de construções, ruas e dos volumes da igreja. O estilo pixelado anterior das copas foi recuperado.
 
-A interface usa uma barra de ferramentas lateral e minimapa navegável, inspirados nas referências. Nomes de ruas e lugares ficam em Ajustes; o botão do carro ativa/desativa o trânsito. Em acessibilidade com redução de movimento, os carros permanecem estáticos.
+A interface usa uma barra de ferramentas lateral e minimapa navegável, inspirados nas referências. Nomes de ruas e lugares ficam em Ajustes; o botão do carro ativa/desativa o trânsito. Em acessibilidade com redução de movimento, todos os efeitos permanecem estáticos.
 
 ## Alinhamento visual às quadras
 
 A pedido do usuário, o gerador avalia as construções contra a orientação local de ruas e quadras OSM. Quando há consenso de direção e o formato é predominantemente ortogonal, grava uma transformação rígida em `building.alignment`. A transformação preserva forma, área, vértices e vazios, com rotação de até 8°, translação de até 1 m e deslocamento de qualquer vértice limitado a 2,25 m. Não pode aumentar de forma significativa a sobreposição com vias, construções vizinhas ou o exterior da quadra. Casos ambíguos, formatos não ortogonais, edificações OSM e praças ficam protegidos.
 
 A revisão atual ajusta 748 das 2.316 construções. São alinhamentos inferidos, não correções cadastrais verificadas casa a casa. A panorâmica do autor `CIABIhB3Ga3kscNQA7WSywv0Hphj` orienta a aparência geral, sem produzir medições 3D. `building.points` continua sendo a geometria de origem. Para comparar o desenho das casas com os contornos de origem, use `?geometry=source` na URL. Igreja e praça conservam a revisão específica pelas referências do autor.
+
+A revisão de materiais, jardins e clima está documentada em [docs/quality-review.md](docs/quality-review.md).

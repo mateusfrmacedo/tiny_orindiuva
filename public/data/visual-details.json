@@ -1,5 +1,5 @@
 {
-  "revision": "user-aerials-2026-11-06",
+  "revision": "owner-aerial-materials-and-gardens-2026-11-06",
   "description": "Design guidance from eight user-supplied Apple Maps aerial screenshots. Existing OSM/Microsoft geometry remains authoritative. Internal park layouts, roof materials and individual trees are schematic, not surveyed.",
   "parks": {
     "228066431": {
@@ -20,7 +20,65 @@
       "correctionReason": "Small footprint inside the mapped park corresponds visually to the circular fountain in the supplied aerial reference, not a house. Original footprint retained under referenceCorrections.",
       "officialName": "Praça Irinéia Figueiredo Barbosa",
       "nameSource": "Croqui urbanístico fornecido pelo usuário e Prefeitura de Orindiúva, Onde Visitar",
-      "nameSourceURL": "https://orindiuva.sp.gov.br/wp-content/uploads/2018/07/onde-visitar.pdf"
+      "nameSourceURL": "https://orindiuva.sp.gov.br/wp-content/uploads/2018/07/onde-visitar.pdf",
+      "plantingUV": [
+        [
+          0.12,
+          0.19,
+          3.3
+        ],
+        [
+          0.3,
+          0.18,
+          3.6
+        ],
+        [
+          0.49,
+          0.18,
+          3.8
+        ],
+        [
+          0.61,
+          0.18,
+          3.1
+        ],
+        [
+          0.83,
+          0.18,
+          3.6
+        ],
+        [
+          0.9,
+          0.47,
+          3.1
+        ],
+        [
+          0.84,
+          0.81,
+          3.5
+        ],
+        [
+          0.58,
+          0.81,
+          3.5
+        ],
+        [
+          0.43,
+          0.81,
+          3.4
+        ],
+        [
+          0.26,
+          0.81,
+          3.5
+        ],
+        [
+          0.12,
+          0.81,
+          3.1
+        ]
+      ],
+      "plantingNote": "Schematic rounded shade-tree groups from owner aerial views, kept clear of the basin, paths and mapped buildings; not surveyed tree positions."
     },
     "425624220": {
       "pattern": "formal-garden",
