@@ -5,7 +5,7 @@ Orindiúva (SP) em miniatura: mapa isométrico interativo inspirado no [Tiny SP]
 **[Explorar o mapa](https://mateusfrmacedo.github.io/tiny_orindiuva/)**
 
 - 220 segmentos de ruas/caminhos e 19 lugares a partir de um recorte do OpenStreetMap.
-- 2.316 contornos de edificações (2.308 Microsoft/Bing e 8 OpenStreetMap), sem preenchimento de casas fictícias.
+- 2.315 contornos de edificações (2.307 Microsoft/Bing e 8 OpenStreetMap), sem preenchimento de casas fictícias.
 - Paleta regional de telhados cerâmicos e coberturas claras, quintais em tons secos, árvores de rua, matas densas e palmeiras em pixel art.
 - Detalhes internos esquemáticos de praças, campos de futebol, tênis, piscinas e cemitério, refinados com referências aéreas fornecidas pelo usuário.
 - Telhados de duas e quatro águas, textura de telhas orientada pela cobertura, chapas, cumeeiras, sombras, portas, garagens e caixilhos voltados para a rua. Fachadas e materiais são interpretações regionais.
@@ -78,10 +78,18 @@ As panorâmicas de abril de 2026 fornecidas pelo usuário orientaram a igreja e 
 
 A interface usa uma barra de ferramentas lateral e minimapa navegável, inspirados nas referências. Nomes de ruas e lugares ficam em Ajustes; o botão do carro ativa/desativa o trânsito. Em acessibilidade com redução de movimento, todos os efeitos permanecem estáticos.
 
+## Registro das construções às ruas
+
+A publicação no GitHub Pages regenera `public/data/map.json` com `scripts/prepare-map.py` antes dos testes e do build, a partir dos dados brutos versionados.
+
+As imagens do Bing (de onde vêm os contornos da Microsoft) e as usadas para traçar as ruas do OSM não estão perfeitamente sobrepostas. Medido neste recorte, os contornos ficavam deslocados alguns metros na mesma direção em todos os quadrantes da cidade, por isso muitas casas apareciam sobre o asfalto. `scripts/registration.py` estima **uma única translação rígida** (sem rotação nem escala, limitada a 8 m) que minimiza a área de construção sobre a pista, e o gerador a aplica a todos os contornos Microsoft antes das demais etapas. No recorte de 2026-11-06 o resultado é (−5,0 m; +0,75 m): construções com mais de 2 m² sobre a pista caem de 429 para 152 e a área sobre a pista de 11.545 m² para 2.017 m². O relatório fica em `map.registrationReport`. Com o registro, um contorno passou a coincidir com uma edificação OSM e é descartado como duplicata. `building.points` são os vértices originais acrescidos dessa translação; os testes verificam isso exatamente.
+
+Depois do alinhamento (abaixo), `scripts/placement_clearance.py` afasta da pista, em até 3 m e dentro da mesma quadra, as casas que ainda invadem a via (`building.placement`). Restam 91 casos que exigiriam mover mais ou atravessar a quadra; eles ficam listados em `docs/placement-review.json` (gerado ao rodar `python3 scripts/prepare-map.py`) para revisão, sem correção forçada.
+
 ## Alinhamento visual às quadras
 
 A pedido do usuário, o gerador avalia as construções contra a orientação local de ruas e quadras OSM. Quando há consenso de direção e o formato é predominantemente ortogonal, grava uma transformação rígida em `building.alignment`. A transformação preserva forma, área, vértices e vazios, com rotação de até 8°, translação de até 1 m e deslocamento de qualquer vértice limitado a 2,25 m. Não pode aumentar de forma significativa a sobreposição com vias, construções vizinhas ou o exterior da quadra. Casos ambíguos, formatos não ortogonais, edificações OSM e praças ficam protegidos.
 
-A revisão atual ajusta 748 das 2.316 construções. São alinhamentos inferidos, não correções cadastrais verificadas casa a casa. A panorâmica do autor `CIABIhB3Ga3kscNQA7WSywv0Hphj` orienta a aparência geral, sem produzir medições 3D. `building.points` continua sendo a geometria de origem. Para comparar o desenho das casas com os contornos de origem, use `?geometry=source` na URL. Igreja e praça conservam a revisão específica pelas referências do autor.
+A revisão atual ajusta 736 das 2.315 construções. São alinhamentos inferidos, não correções cadastrais verificadas casa a casa. A panorâmica do autor `CIABIhB3Ga3kscNQA7WSywv0Hphj` orienta a aparência geral, sem produzir medições 3D. `building.points` continua sendo a geometria de origem (já registrada às ruas). Para comparar o desenho das casas com os contornos de origem, use `?geometry=source` na URL. Igreja e praça conservam a revisão específica pelas referências do autor.
 
 A revisão de materiais, jardins e clima está documentada em [docs/quality-review.md](docs/quality-review.md).
