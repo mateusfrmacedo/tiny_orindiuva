@@ -115,6 +115,12 @@ for a in areas:
   for b in buildings:
    style=a['visual'].get('buildingStyles',{}).get(b['id'])
    if style:b['wallColor']=style['wall'];b['trimColor']=style['trim']
+# Public buildings studied at street level keep their colours, bands and signs.
+for b in buildings:
+ civic=visual_details.get('buildings',{}).get(b['id'])
+ if civic:
+  b['wallColor']=civic['wall'];b['trimColor']=civic.get('trim',civic['wall']);b['civic']={k:v for k,v in civic.items() if k not in ('wall','trim','name','reference')}
+  if civic.get('height'):b['h']=civic['height']
 # Warm inner-block ground replaces the blanket of grass between roofs.
 # Derive block limits from existing streets and cut out all mapped parks/facilities.
 building_cover=unary_union([Polygon(b['points']) for b in buildings])
