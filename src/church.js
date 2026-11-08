@@ -2,8 +2,8 @@
 // Proportions and details follow the owner's aerial 360 photo (April 2026):
 // a Latin cross under one low hipped roof of pale metal sheet, chamfered front
 // corners, a short front tower with an ochre cornice and a slate pyramid spire,
-// grey-framed arched openings between dark-grey pilasters, a metal cross over
-// the crossing, broad front steps and a railed side ramp. Heights are estimates.
+// grey-framed arched openings between dark-grey pilasters, a metal cross on
+// top of the spire, broad front steps and a railed side ramp. Heights are estimates.
 const cache=new WeakMap();
 const EPS=1e-9;
 const signedArea=p=>p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a[0]*b[1]-a[1]*b[0]},0)/2;
@@ -70,8 +70,7 @@ export function churchLayout(b){
  ground.push({poly:[[ramp[0],ramp[1]],[ramp[2],ramp[1]],[ramp[2],ramp[3]],[ramp[0],ramp[3]]],z:.6,top:'#9da3a5',side:'#7b8285',rail:[[ramp[0],ramp[1]],[ramp[0],ramp[3]],[ramp[2],ramp[3]]]});
  ground.push({poly:[[ramp[0],ramp[3]],[ramp[0]+1.6,ramp[3]],[ramp[0]+1.6,ramp[3]+5.2],[ramp[0],ramp[3]+5.2]],z:.6,slopeTo:.05,top:'#a7acae',side:'#7b8285',rail:[[ramp[0],ramp[3]],[ramp[0],ramp[3]+5.2]],railRight:[[ramp[0]+1.6,ramp[3]],[ramp[0]+1.6,ramp[3]+5.2]]});
  faces.sort((a,c)=>a.depth-c.depth);
- const cross=model.roofCross??[0,-1];
- const layout={world,outline,local,forward,right,origin,model,faces,roofHeight,planeAt,ground,cross:[...cross,roofHeight(...cross)]};cache.set(b,layout);return layout;
+ const layout={world,outline,local,forward,right,origin,model,faces,roofHeight,planeAt,ground,cross:[tcx,tcy,model.spireHeight]};cache.set(b,layout);return layout;
 }
 
 function drawPolygon(ctx,points,fill,stroke=null,width=.15){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
@@ -142,8 +141,8 @@ export function drawChurch(ctx,b,project,lamps=0,scale=1){const layout=churchLay
    if(o.cross)smallCross(ctx,layout,face,o.t,o.type==='door'?o.z+o.h*.55:o.z+o.h+.55,o.type==='door'?.45:.3,project,o.type==='door'?'#efeee6':'#7d878c');
   }
  }
- // Metal cross on the ridge over the crossing.
- const [cx,cy,cz]=layout.cross,q=(dx,z)=>project(world(cx+dx,cy),z);ctx.strokeStyle='#8e979b';ctx.lineWidth=.2;ctx.beginPath();ctx.moveTo(...q(0,cz));ctx.lineTo(...q(0,cz+2.6));ctx.moveTo(...q(-.7,cz+1.9));ctx.lineTo(...q(.7,cz+1.9));ctx.stroke();
+ // Metal cross on top of the spire.
+ const [cx,cy,cz]=layout.cross,q=(dx,z)=>project(world(cx+dx,cy),z);ctx.strokeStyle='#7f888c';ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(...q(0,cz-.1));ctx.lineTo(...q(0,cz+1.8));ctx.moveTo(...q(-.55,cz+1.25));ctx.lineTo(...q(.55,cz+1.25));ctx.stroke();
 }
 const inPoly=(pt,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>pt[1])!==(b[1]>pt[1])&&pt[0]<(b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0])c=!c}return c};
 export function drawChurchNight(ctx,b,project){const layout=churchLayout(b),P=p=>project(p,p[2]),faces=layout.faces;ctx.shadowColor='#efd09a';ctx.shadowBlur=4;
