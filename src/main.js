@@ -49,7 +49,8 @@ function building(b,index){
  const shape=geometryFor(b),pts=shape.points,h=b.h,base=pts.map(p=>iso(p)),col=roofColors[b.roof%roofColors.length],style=houseStyles.get(b);
  if(plan){polygon(base,b.landmark?'#f0f0e7':col[0],'#696252',.65);for(const hole of shape.holes||[])ground(hole,'#c7c59f','#696252');return}
  polygon(base.map(p=>[p[0]+h*.6,p[1]+h*.35]),'#34483230',null);
- for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;if(base[j][0]>=base[i][0])continue;drawFacade(ctx,pts[i],pts[j],h,iso,style,i===style.front,scale,lighting.lamps)}
+ let signFace=-1;if(style.civic){style.civic._project=iso;const vis=pts.map((_,i)=>i).filter(i=>base[(i+1)%pts.length][0]<base[i][0]);signFace=vis.includes(style.front)?style.front:vis.sort((x,y)=>style.edgeScore[x]-style.edgeScore[y])[0]}
+ for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;if(base[j][0]>=base[i][0])continue;drawFacade(ctx,pts[i],pts[j],h,iso,style,i===style.front,scale,lighting.lamps,false,i===signFace)}
  const planes=buildingRoofs.get(b);
  if(b.roofMaterial==='metal'||shape.holes?.length){drawRoof(ctx,pts.map(p=>[...p,0]),h,iso,col[0],true,scale);for(const hole of shape.holes||[])polygon(hole.map(p=>iso(p,h)),'#b6b59a','#696252')}
  else{

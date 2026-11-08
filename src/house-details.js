@@ -3,16 +3,16 @@ export function seedFor(id){let h=2166136261;for(const c of id)h=Math.imul(h^c.c
 const walls=['#e5d9bd','#d6cbb3','#c6d4c0','#d9c6aa','#dadbd0','#b9cabb','#dfc9ba','#b9c9ca'];
 const trim=['#777f71','#9a9986','#718779','#9b8e7c','#87958c'];
 export function makeHouseStyle(b,shape,segments){
- const seed=seedFor(b.id);let front=-1,best=Infinity;
+ const seed=seedFor(b.id);let front=-1,best=Infinity;const edgeScore=shape.points.map(()=>Infinity);
  shape.points.forEach((a,i)=>{const c=shape.points[(i+1)%shape.points.length],length=Math.hypot(c[0]-a[0],c[1]-a[1]);if(length<3)return;const p=[(a[0]+c[0])/2,(a[1]+c[1])/2];
   for(const [s,t]of segments){const dx=t[0]-s[0],dy=t[1]-s[1],len2=dx*dx+dy*dy,f=Math.max(0,Math.min(1,((p[0]-s[0])*dx+(p[1]-s[1])*dy)/len2)),q=[s[0]+f*dx,s[1]+f*dy],distance=Math.hypot(q[0]-p[0],q[1]-p[1]);
    // CCW outline: street must lie outside this facade, not across its interior.
    if((c[0]-a[0])*(q[1]-p[1])-(c[1]-a[1])*(q[0]-p[0])>=0)continue;
    const score=distance+(1-Math.abs(((c[0]-a[0])*dx+(c[1]-a[1])*dy)/length/Math.sqrt(len2)))*12;
-   if(score<best){best=score;front=i}
+   edgeScore[i]=Math.min(edgeScore[i],score-length*.15);if(score<best){best=score;front=i}
   }
  });
- return {seed,wall:b.wallColor||walls[seed%walls.length],trim:b.trimColor||trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
+ return {seed,edgeScore,civic:b.civic?{...b.civic}:null,wall:b.wallColor||walls[seed%walls.length],trim:b.trimColor||trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
 }
 
 const materialCache=new Map();
@@ -39,13 +39,14 @@ export function drawRoof(ctx,points,baseHeight,project,color,metal,scale){
  ctx.beginPath();for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];if((a[2]||0)>.1&&(b[2]||0)>.1){ctx.moveTo(...projected[i]);ctx.lineTo(...projected[(i+1)%points.length])}}ctx.strokeStyle=metal?'#e7e8d580':'#edb17b';ctx.lineWidth=.21;ctx.stroke();
 }
 
-export function drawFacade(ctx,a,b,height,project,style,isFront,scale,lamps=0,lightsOnly=false){
+export function drawFacade(ctx,a,b,height,project,style,isFront,scale,lamps=0,lightsOnly=false,hasSign=false){
  const length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(length<.8)return;
  const p=(u,z)=>project([a[0]+(b[0]-a[0])*u/length,a[1]+(b[1]-a[1])*u/length],z);
  const quad=(x,z,w,h,fill,stroke=null,width=.08)=>{ctx.beginPath();[[x,z],[x+w,z],[x+w,z+h],[x,z+h]].forEach(([u,v],i)=>i?ctx.lineTo(...p(u,v)):ctx.moveTo(...p(u,v)));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}};
  if(!lightsOnly){quad(0,0,length,height,style.wall,'#74796770',.12);const light=((b[1]-a[1])*.55-(b[0]-a[0])*.7)/length;quad(0,0,length,height,`rgba(53,67,58,${.05+.12*(1-Math.max(0,light))})`);quad(0,0,length,.28,'#706b5840');quad(0,height-.38,length,.38,'#6e635b25');quad(0,height-.11,length,.11,'#fff5df80');
   if(scale>2.2){for(let x=1.6;x<length;x+=4.2)quad(x,.4,.025,height-.8,'#635f4e0d');if(length>5)quad(.14,.2,.1,height-.35,style.trim)}
  }
+ if(style.civic&&!lightsOnly){drawCivic(ctx,a,b,length,height,p,quad,style.civic,hasSign,scale);return}
  if(scale<1.6)return;
  const garage=isFront&&style.garage&&length>7,door=isFront&&length>4,doorX=garage?length*.6:.75;
  if(!lightsOnly&&door){if(garage){quad(.65,.05,Math.min(3.5,length*.4),2.25,style.trim,'#eee5ca',.13);if(scale>2.4)for(let z=.25;z<2.2;z+=.23)quad(.75,z,Math.min(3.3,length*.4-.2),.035,'#34433b55')}
@@ -58,4 +59,24 @@ export function drawFacade(ctx,a,b,height,project,style,isFront,scale,lamps=0,li
   quad(x,1.15,1.15,1.15,lit?'#e7b868':'#536b68',lightsOnly?null:'#eee5cc',.12);
   if(!lightsOnly&&scale>2.4){quad(x+.04,1.2,.23,1.03,'#9ebcb04a');quad(x+.55,1.15,.06,1.15,style.trim);quad(x-.13,1.06,1.42,.11,'#e9dcc1');quad(x,2.25,1.2,.09,'#6a6b5655')}
  }
+}
+
+// Public buildings studied at street level: painted bands, corner pilasters,
+// louvred or large windows, a lettered sign and an entrance canopy.
+function drawCivic(ctx,a,b,length,height,p,quad,c,hasSign,scale){
+ const band=c.band;if(band)quad(0,height-band.height,length,band.height,band.colour,'#00000018',.06);
+ if(c.parapet)quad(0,height-c.parapet.height,length,c.parapet.height,c.parapet.colour);
+ if(c.edge)quad(0,height-.12,length,.12,c.edge);
+ for(const [u,w]of [[0,c.pilaster?.width||0],[length-(c.pilaster?.width||0),c.pilaster?.width||0]])if(w&&length>4)quad(u,.05,w,height-(band?band.height:0)-.05,c.pilaster.colour);
+ if(scale<1.2)return;
+ const win=c.windows;if(win){const n=Math.max(1,Math.floor((length-2)/win.spacing)),gap=length/(n+1);for(let j=0;j<n;j++){const x=(j+1)*gap-win.width/2;if(hasSign&&c.door&&Math.abs(x+win.width/2-length*c.door.at)<c.door.width)continue;quad(x,win.sill,win.width,win.height,win.colour,win.frame||null,.06);if(win.louvre&&scale>2)for(let z=win.sill+.12;z<win.sill+win.height;z+=.16)quad(x+.05,z,win.width-.1,.035,'#7f7b70')}}
+ if(!hasSign)return;
+ if(c.door){const x=length*c.door.at-c.door.width/2;quad(x,.05,c.door.width,c.door.height,c.door.colour,'#ffffff55',.06)}
+ if(c.awning){const aw=c.awning,len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=[(b[1]-a[1])/len,-(a[0]-b[0])/len],out=(n[0]+n[1]>0?1:-1),u0=length*aw.at-aw.width/2;
+  function projectOut(u,z,d){const q=[a[0]+(b[0]-a[0])*u/length+n[0]*out*d,a[1]+(b[1]-a[1])*u/length+n[1]*out*d];return c._project(q,z)}
+  ctx.beginPath();for(let k=0;k<=10;k++){const t=k/10,ang=Math.PI*t/2;ctx[k?'lineTo':'moveTo'](...projectOut(u0,aw.height+Math.sin(ang)*aw.rise,aw.depth*(1-Math.cos(ang))))}for(let k=10;k>=0;k--){const t=k/10,ang=Math.PI*t/2;ctx.lineTo(...projectOut(u0+aw.width,aw.height+Math.sin(ang)*aw.rise,aw.depth*(1-Math.cos(ang))))}ctx.closePath();ctx.fillStyle=aw.colour;ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ffffffaa';ctx.lineWidth=.05;ctx.stroke();
+  ctx.strokeStyle=aw.posts||'#7aa6d6';ctx.lineWidth=.1;ctx.beginPath();for(const u of [u0+.1,u0+aw.width-.1]){ctx.moveTo(...projectOut(u,0,aw.depth));ctx.lineTo(...projectOut(u,aw.height,aw.depth))}ctx.stroke()}
+ const sign=c.sign;if(sign&&scale>1.4){const w=Math.min(length*.8,sign.width||length*.6),x=length*(sign.at??.5)-w/2,z=sign.z;if(sign.panel)quad(x,z,w,sign.height,sign.panel);
+  const o=p(x,z+sign.height),ux=p(x+1,z+sign.height),vz=p(x,z+sign.height-1);ctx.save();ctx.transform(ux[0]-o[0],ux[1]-o[1],vz[0]-o[0],vz[1]-o[1],o[0],o[1]);ctx.scale(.01,.01);ctx.fillStyle=sign.colour;ctx.font=`${sign.italic?'italic ':''}700 ${sign.height*82}px ${sign.font||'Geist, sans-serif'}`;ctx.textBaseline='middle';ctx.textAlign='center';
+  const text=sign.text;let size=sign.height*82;while(ctx.measureText(text).width>w*92&&size>8){size*=.92;ctx.font=`${sign.italic?'italic ':''}700 ${size}px ${sign.font||'Geist, sans-serif'}`}ctx.fillText(text,w*50,sign.height*50);ctx.restore()}
 }

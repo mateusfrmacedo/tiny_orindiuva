@@ -85,6 +85,9 @@ export function squareProps(area){
  for(const [u,v,du,dv]of vis.benches||[])props.push({kind:'bench',p:at(u,v),dir:dirOf(du,dv),r:.6});
  for(const [u,v]of vis.bins||[])props.push({kind:'bin',p:at(u,v),dir:dirOf(1,0),r:.4});
  for(const [u,v]of vis.saplings||[])props.push({kind:'sapling',p:at(u,v),dir:dirOf(1,0),r:.8});
+ for(const [u,v,du,dv]of vis.stoneBenches||[])props.push({kind:'stoneBench',p:at(u,v),dir:dirOf(du,dv),r:.6});
+ for(const [u,v]of vis.poles||[])props.push({kind:'pole',p:at(u,v),dir:dirOf(1,0),r:2.2});
+ for(const [u,v,w,d,h]of vis.kiosks||[])props.push({kind:'kiosk',p:at(u,v),dir:dirOf(1,0),w,d,h,r:1.4});
  return props;
 }
 
@@ -121,6 +124,14 @@ export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir
   ctx.strokeStyle='#2f3935';ctx.lineCap='round';ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(...base);ctx.lineTo(...top);ctx.quadraticCurveTo(...iso([c[0]+dir[0]*.55,c[1]+dir[1]*.55],4.75),...end);ctx.lineTo(...hang);ctx.stroke();
   poly(ctx,[iso([c[0]-.18,c[1]-.18],0),iso([c[0]+.18,c[1]-.18],0),iso([c[0]+.18,c[1]+.18],0),iso([c[0]-.18,c[1]+.18],0)],'#3a4440');
   ctx.beginPath();ctx.arc(...iso(arm,3.6),.3,0,Math.PI*2);ctx.fillStyle='#f3f1e6';ctx.fill();ctx.strokeStyle='#aeb3ad';ctx.lineWidth=.05;ctx.stroke();return}
+ if(prop.kind==='stoneBench'){if(scale<.8)return;const col=['#eceae2','#c8c6bd','#f6f5ef'];
+  // White cast-concrete benches around the fountain, as in the street photo.
+  for(const a of [-.7,.7])box(ctx,iso,c,dir,a-.14,a+.14,-.2,.2,0,.4,col);box(ctx,iso,c,dir,-.95,.95,-.25,.25,.4,.5,col);box(ctx,iso,c,dir,-.95,.95,.18,.28,.5,.85,col);return}
+ if(prop.kind==='pole'){const top=iso(c,8),head=[c[0]+dir[0]*.9,c[1]+dir[1]*.9];ctx.strokeStyle='#868d90';ctx.lineCap='round';ctx.lineWidth=.2;ctx.beginPath();ctx.moveTo(...iso(c,0));ctx.lineTo(...top);ctx.lineTo(...iso(head,8.05));ctx.stroke();
+  box(ctx,iso,head,dir,-.35,.35,-.16,.16,7.92,8.06,['#5d6467','#4b5154','#7b8285']);return}
+ if(prop.kind==='kiosk'){const w=prop.w/2,d=prop.d/2,h=prop.h;box(ctx,iso,c,dir,-w,w,-d,d,0,h,['#f2f1ec','#d6d5cf','#e9e8e2']);
+  // Service window band on the sides facing the square.
+  box(ctx,iso,c,dir,-w-.02,w+.02,-d-.02,d+.02,1.1,1.75,['#55615f','#46504e','#e9e8e2']);box(ctx,iso,c,dir,-w-.15,w+.15,-d-.15,d+.15,h,h+.12,['#e6e5df','#c9c8c2','#f6f5f0']);return}
  if(prop.kind==='bench'){if(scale<.8)return;const legs='#33393a';
   for(const a of [-.75,.75])box(ctx,iso,c,dir,a-.05,a+.05,-.22,.22,0,.42,[legs,legs,legs]);
   box(ctx,iso,c,dir,-.9,.9,-.22,.22,.4,.47,['#a8754a','#875c38','#b9875a']);
@@ -138,6 +149,7 @@ export function drawSquareLights(ctx,props,iso,lamps){if(lamps<.05)return;ctx.sa
  // The portal frames are lit red at night (owner's night photo).
  for(const prop of props){if(prop.kind!=='portal'||prop.arch||prop.depth)continue;const w=prop.width/2,d=prop.dir,P=(k,z)=>iso([prop.p[0]+d[0]*k,prop.p[1]+d[1]*k],z);
   ctx.save();ctx.shadowColor=`rgba(235,40,52,${lamps})`;ctx.shadowBlur=6;ctx.strokeStyle=`rgba(226,44,54,${.9*lamps})`;ctx.lineWidth=.42;ctx.lineJoin='miter';ctx.beginPath();ctx.moveTo(...P(-w,0));ctx.lineTo(...P(-w,prop.height));ctx.lineTo(...P(w,prop.height));ctx.lineTo(...P(w,0));ctx.stroke();ctx.restore()}
+ for(const prop of props){if(prop.kind!=='pole')continue;const q=iso([prop.p[0]+prop.dir[0]*.9,prop.p[1]+prop.dir[1]*.9],7.85);const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],1.6);g.addColorStop(0,`rgba(244,248,255,${.9*lamps})`);g.addColorStop(1,'rgba(230,240,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(q[0],q[1],1.6,0,Math.PI*2);ctx.fill()}
  for(const prop of props){const globes=prop.kind==='lamp'?[iso([prop.p[0]+prop.dir[0]*.75,prop.p[1]+prop.dir[1]*.75],3.6)]:portalLamps(prop).map(p=>iso(p,prop.height+.22));for(const q of globes){
   const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],1.4);g.addColorStop(0,`rgba(255,236,190,${.85*lamps})`);g.addColorStop(.3,`rgba(255,222,160,${.35*lamps})`);g.addColorStop(1,'rgba(255,214,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(q[0],q[1],1.4,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=`rgba(255,247,222,${lamps})`;ctx.beginPath();ctx.arc(q[0],q[1],.3,0,Math.PI*2);ctx.fill()}}
