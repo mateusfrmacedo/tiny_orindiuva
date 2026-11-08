@@ -62,13 +62,19 @@ junctions=[{'node':n,'point':nodes[n],'degree':len(neighbours),'roads':sorted(no
 network={'nodeCount':len(graph),'edgeCount':sum(map(len,graph.values()))//2,'components':components,'junctions':junctions}
 features=json.loads((ROOT/'public/data/buildings-microsoft.geojson').read_text())['features']
 buildings=[];osm_shapes=[Polygon(b['points']) for b in osm_buildings]
-for f in features:
- props=f['properties'];poly=shape(f['geometry']);pts=ring([xy(*c) for c in f['geometry']['coordinates'][0]]);p=Polygon(pts)
+# Bing and OSM imagery are offset by a few metres; register footprints to the streets once.
+from registration import estimate_offset
+raw_rings=[ring([xy(*c) for c in f['geometry']['coordinates'][0]]) for f in features]
+reg_dx,reg_dy,registration_report=estimate_offset([r for r in raw_rings if len(r)>=3 and Polygon(r).is_valid and Polygon(r).area>=9],roads)
+print('Footprint registration:',registration_report)
+shift=lambda pts:[[round(x+reg_dx,4),round(y+reg_dy,4)] for x,y in pts]
+for f,raw in zip(features,raw_rings):
+ props=f['properties'];pts=shift(raw);p=Polygon(pts)
  if not p.is_valid or p.area<9:continue
  # Prefer community-mapped OSM outlines wherever they overlap machine detections.
  if any(p.intersection(o).area/min(p.area,o.area)>.35 for o in osm_shapes):continue
  key=hashlib.sha256(json.dumps(f['geometry'],sort_keys=True).encode()).hexdigest()[:16]
- buildings.append({'id':'ms-'+key,'points':pts,'holes':[ring([xy(*c) for c in hole]) for hole in f['geometry']['coordinates'][1:]],'h':props['height'] if props['height']>0 else 4.5,'heightSource':'microsoft' if props['height']>0 else 'illustrative','roof':int(key[:4],16)%6,'source':'Microsoft/Bing','confidence':round(props.get('confidence',-1),3),'area':round(p.area,1)})
+ buildings.append({'id':'ms-'+key,'points':pts,'holes':[shift(ring([xy(*c) for c in hole])) for hole in f['geometry']['coordinates'][1:]],'h':props['height'] if props['height']>0 else 4.5,'heightSource':'microsoft' if props['height']>0 else 'illustrative','roof':int(key[:4],16)%6,'source':'Microsoft/Bing','confidence':round(props.get('confidence',-1),3),'area':round(p.area,1)})
 buildings+=osm_buildings
 for b in buildings:
  p=Polygon(b['points']);b['points']=b['points'] if p.exterior.is_ccw else list(reversed(b['points']));b['area']=round(p.area,1);b['centroid']=list(p.centroid.coords)[0];b['bounds']=list(p.bounds)
@@ -91,6 +97,11 @@ for a in areas:
  a['frame']={'origin':list(origin),'u':u,'v':v,'width':math.hypot(*u),'height':math.hypot(*v)}
  if a['id'] in visual_details['parks']:
   a['visual']=visual_details['parks'][a['id']]
+  # Fountain position follows the (registered) detection it replaces instead of a hand-tuned constant.
+  fountain=next((c['originalFeature'] for c in reference_corrections if c['originalFeature']['id']==a['visual'].get('reclassifyBuilding')),None)
+  if fountain:
+   (uu,uv),(vu,vv)=a['frame']['u'],a['frame']['v'];det=uu*vv-uv*vu;rx,ry=[fountain['centroid'][j]-a['frame']['origin'][j] for j in [0,1]]
+   a['visual']=dict(a['visual'],fountainUV=[round((rx*vv-ry*vu)/det,8),round((uu*ry-uv*rx)/det,8)])
   if a['visual'].get('officialName'):
    a['name']=a['visual']['officialName']
    if not any(p['id']==a['id'] for p in places):places.append({'id':a['id'],'type':'way','name':a['name'],'kind':'park','point':list(Polygon(a['points']).centroid.coords)[0],'street':'Praça identificada no croqui urbanístico e no guia municipal Onde Visitar.'})
@@ -125,7 +136,9 @@ church_building['visual']={'frame':church_frame,'model':church_spec,'reference':
 central_park['visual']['churchFrame']=church_frame
 from visual_alignment import align_buildings
 alignment_report=align_buildings(buildings,roads,areas)
-def display_points(building):return building.get('alignment',{}).get('points',building['points'])
+from placement_clearance import correct_placement
+placement_report=correct_placement(buildings,roads,areas)
+def display_points(building):return building.get('placement',building.get('alignment',building))['points']
 building_cover=unary_union([Polygon(display_points(b)) for b in buildings])
 managed_parks=unary_union([Polygon(a['points']) for a in areas if a['kind']=='park'])
 
@@ -198,7 +211,8 @@ meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPe
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]
 meta['sources'].append({'name':'ESA WorldCover 2021 v200','role':'Cobertura arbórea e água, resolução 10 m; recorte e simplificação','url':'https://esa-worldcover.org/en/data-access','license':'CC-BY-4.0','attribution':'© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium'})
-model={'alignmentReport':alignment_report,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+model={'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+(ROOT/'docs/placement-review.json').write_text(json.dumps(placement_report,ensure_ascii=False,indent=2)+'\n')
 (ROOT/'public/data/map.json').write_text(json.dumps(model,separators=(',',':'),ensure_ascii=False))
 print(len(roads),'road/path segments;',len(buildings),'real footprint geometries;',len(trees),'decorative trees in mapped cover; zero synthetic buildings')
 

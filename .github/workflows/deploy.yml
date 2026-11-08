@@ -22,6 +22,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install shapely==2.2.0
+      # Regenerate map.json from the raw OSM/Microsoft/ESA snapshots so the site always matches the generator.
+      - run: python3 scripts/prepare-map.py
       - run: npm ci
       - run: npm test
       - run: npm run build
