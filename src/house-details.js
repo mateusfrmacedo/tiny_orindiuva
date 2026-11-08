@@ -12,7 +12,7 @@ export function makeHouseStyle(b,shape,segments){
    edgeScore[i]=Math.min(edgeScore[i],score-length*.15);if(score<best){best=score;front=i}
   }
  });
- return {seed,edgeScore,civic:b.civic?{...b.civic}:null,wall:b.wallColor||walls[seed%walls.length],trim:b.trimColor||trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
+ return {seed,edgeScore,civic:b.civic?{...b.civic}:null,wall:b.wallColor||b.streetWall||walls[seed%walls.length],trim:b.trimColor||trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
 }
 
 const materialCache=new Map();
@@ -67,6 +67,9 @@ function drawCivic(ctx,a,b,length,height,p,quad,c,hasSign,scale){
  const band=c.band;if(band)quad(0,height-band.height,length,band.height,band.colour,'#00000018',.06);
  if(c.parapet)quad(0,height-c.parapet.height,length,c.parapet.height,c.parapet.colour);
  if(c.edge)quad(0,height-.12,length,.12,c.edge);
+ // Vertical cladding ribs (sheds, gyms) and bare block coursing.
+ if(c.siding&&scale>1.2)for(let x=c.siding.spacing;x<length;x+=c.siding.spacing)quad(x,.05,.04,height-.1,c.siding.colour);
+ if(c.grid&&scale>1.6){for(let x=c.grid.dx;x<length;x+=c.grid.dx)quad(x,.05,.03,height-.1,c.grid.colour);for(let z=c.grid.dz;z<height;z+=c.grid.dz)quad(0,z,length,.03,c.grid.colour)}
  for(const st of c.stripes||[])quad(0,st.z,length,st.height,st.colour);
  for(const [u,w]of [[0,c.pilaster?.width||0],[length-(c.pilaster?.width||0),c.pilaster?.width||0]])if(w&&length>4)quad(u,.05,w,height-(band?band.height:0)-.05,c.pilaster.colour);
  if(scale<1.2)return;

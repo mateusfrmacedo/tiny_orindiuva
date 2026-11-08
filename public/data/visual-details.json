@@ -3,9 +3,176 @@
   "description": "Design guidance from eight user-supplied Apple Maps aerial screenshots. Existing OSM/Microsoft geometry remains authoritative. Internal park layouts, roof materials and individual trees are schematic, not surveyed.",
   "parks": {
     "228066431": {
-      "pattern": "circular-garden",
-      "reference": "Captura de Tela 2026-11-06 às 17.47.48.png",
-      "confidence": "visual match to mapped park location; internal paths are schematic"
+      "pattern": "open-park",
+      "reference": "Street View collection streetview_orindiuva (42-43, Praça Caxalu, pano a 9 m da área mapeada), studied by eye; nothing copied.",
+      "confidence": "Street View photos taken at this mapped park (named Praça Florisa Maria dos Santos in OSM, known as Praça Caxalu); paths, palms and playground are placed by eye.",
+      "parking": 0.09,
+      "cycleLane": [
+        0.03,
+        0.12,
+        0.97,
+        0.97
+      ],
+      "walks": [
+        [
+          [
+            0.06,
+            0.55
+          ],
+          [
+            0.3,
+            0.25
+          ],
+          [
+            0.58,
+            0.47
+          ]
+        ],
+        [
+          [
+            0.58,
+            0.47
+          ],
+          [
+            0.8,
+            0.72
+          ],
+          [
+            0.94,
+            0.42
+          ]
+        ],
+        [
+          [
+            0.3,
+            0.94
+          ],
+          [
+            0.44,
+            0.68
+          ],
+          [
+            0.58,
+            0.47
+          ]
+        ],
+        [
+          [
+            0.16,
+            0.17
+          ],
+          [
+            0.4,
+            0.32
+          ],
+          [
+            0.58,
+            0.47
+          ]
+        ],
+        [
+          [
+            0.58,
+            0.47
+          ],
+          [
+            0.62,
+            0.2
+          ],
+          [
+            0.85,
+            0.17
+          ]
+        ]
+      ],
+      "plazas": [
+        [
+          0.58,
+          0.47,
+          5.2
+        ],
+        [
+          0.3,
+          0.94,
+          2.6
+        ]
+      ],
+      "sand": [],
+      "palms": [
+        [
+          0.4,
+          0.38,
+          7.5
+        ],
+        [
+          0.47,
+          0.55,
+          8.2
+        ],
+        [
+          0.66,
+          0.6,
+          7.0
+        ],
+        [
+          0.7,
+          0.36,
+          7.8
+        ],
+        [
+          0.5,
+          0.78,
+          7.2
+        ],
+        [
+          0.82,
+          0.56,
+          8.0
+        ],
+        [
+          0.33,
+          0.6,
+          6.8
+        ]
+      ],
+      "playgrounds": [
+        [
+          0.22,
+          0.33,
+          1,
+          0
+        ]
+      ],
+      "poles": [
+        [
+          0.22,
+          0.115
+        ],
+        [
+          0.47,
+          0.115
+        ],
+        [
+          0.72,
+          0.115
+        ],
+        [
+          0.93,
+          0.3
+        ],
+        [
+          0.93,
+          0.75
+        ],
+        [
+          0.06,
+          0.7
+        ],
+        [
+          0.6,
+          0.36
+        ]
+      ]
     },
     "425624221": {
       "pattern": "fountain-garden",
@@ -1236,6 +1403,67 @@
           "heightFactor": 3.4
         }
       ]
+    },
+    "228066408": {
+      "pattern": "corner-garden",
+      "reference": "Street View collection streetview_orindiuva (39-41, R. Adolfo de Oliveira, 152), studied by eye; nothing copied.",
+      "confidence": "Layout from three street-level photos; lawn triangles and paths placed by eye.",
+      "sidewalk": 2.6,
+      "phones": [
+        [
+          0.06,
+          0.42,
+          0,
+          1
+        ]
+      ],
+      "stoneBenches": [
+        [
+          0.07,
+          0.6,
+          0,
+          1
+        ]
+      ],
+      "palms": [
+        [
+          0.46,
+          0.36,
+          8.0
+        ]
+      ],
+      "poles": [
+        [
+          0.3,
+          0.47
+        ]
+      ]
+    },
+    "228066402": {
+      "pattern": "cemetery",
+      "reference": "Street View collection streetview_orindiuva (37-38, Rod. Waldemar Lopes Ferraz), studied by eye; nothing copied.",
+      "confidence": "Gate and wall from two street-level photos; the gate sits where the photo heading meets the mapped boundary.",
+      "gate": {
+        "at": [
+          0.605,
+          0.0
+        ],
+        "along": [
+          1,
+          0
+        ],
+        "width": 4.4,
+        "height": 4.8,
+        "text": "CEMITÉRIO MUNICIPAL",
+        "colour": "#80ad8c",
+        "brick": "#bd6b48"
+      },
+      "perimeterWall": {
+        "height": 2.2,
+        "colour": "#a6d4b4",
+        "cap": "#b8653f",
+        "post": "#b8653f"
+      }
     }
   },
   "entranceSign": {
@@ -1835,6 +2063,286 @@
         "frame": "#f4f1e8",
         "louvre": true
       }
+    },
+    "ms-404cba91b1d8dfdc": {
+      "name": "Ginásio da quadra poliesportiva (centro esportivo)",
+      "reference": "Street View collection streetview_orindiuva (20, R. Antônio Lucianeli, 2), studied by eye; nothing copied.",
+      "wall": "#dddfd9",
+      "trim": "#5f9f5f",
+      "height": 7.5,
+      "stripes": [
+        {
+          "z": 0,
+          "height": 2.6,
+          "colour": "#5f9f5f"
+        }
+      ],
+      "siding": {
+        "spacing": 0.7,
+        "colour": "#bcbfb9"
+      },
+      "edge": "#f2f2ee",
+      "windows": {
+        "spacing": 4.2,
+        "width": 3.0,
+        "height": 0.9,
+        "sill": 5.7,
+        "colour": "#8f9a96",
+        "frame": "#f2f2ee",
+        "louvre": true
+      }
+    },
+    "ms-c9c2e802e59c0855": {
+      "name": "Clube Arcecco",
+      "reference": "Street View collection streetview_orindiuva (44-45, Rod. Armando S. Oliveira, 46), studied by eye; nothing copied.",
+      "wall": "#c9a084",
+      "trim": "#b9b4aa",
+      "height": 7.0,
+      "flatRoof": true,
+      "grid": {
+        "dx": 1.2,
+        "dz": 0.6,
+        "colour": "#a8806a"
+      },
+      "stripes": [
+        {
+          "z": 0,
+          "height": 2.0,
+          "colour": "#c2c0b8"
+        }
+      ],
+      "edge": "#b98f74",
+      "windows": {
+        "spacing": 3.6,
+        "width": 1.6,
+        "height": 0.7,
+        "sill": 5.4,
+        "colour": "#5e5a55"
+      }
+    },
+    "ms-a8d1a7b2591a5258": {
+      "name": "NAEE - Núcleo de Atendimento Educacional Especializado",
+      "reference": "Street View collection streetview_orindiuva (25, R. Gil Cândido da Silva, 358), studied by eye; nothing copied.",
+      "wall": "#7fbca3",
+      "trim": "#f3f3ee",
+      "edge": "#f5f5f0",
+      "windows": {
+        "spacing": 3.4,
+        "width": 1.2,
+        "height": 1.1,
+        "sill": 1.0,
+        "colour": "#4b5d58",
+        "frame": "#f3f3ee"
+      },
+      "sign": {
+        "text": "NAEE",
+        "z": 1.9,
+        "height": 0.9,
+        "width": 3.0,
+        "at": 0.3,
+        "panel": "#2e8b4e",
+        "colour": "#ffffff"
+      }
+    },
+    "ms-35e780072b800ac5": {
+      "name": "Galpão na esquina da Av. José Nunes dos Santos (foto do CRAS)",
+      "reference": "Street View collection streetview_orindiuva (24, R. Gil Cândido da Silva, 358), studied by eye; nothing copied.",
+      "wall": "#d6d9da",
+      "trim": "#b5b9bb",
+      "siding": {
+        "spacing": 0.55,
+        "colour": "#b3b7b9"
+      },
+      "stripes": [
+        {
+          "z": 0,
+          "height": 2.3,
+          "colour": "#bbb5a9"
+        }
+      ]
+    }
+  },
+  "streets": {
+    "description": "House colours and front walls (muros) per street, from the Street View collection streetview_orindiuva (Jan 2025), studied by eye; colours are drawn per house from the street palette, not surveyed house by house. Wall entries are [colour, coping, style].",
+    "Rua Horacina Andrade Borges": {
+      "photos": "05-11",
+      "houses": [
+        "#f1efe8",
+        "#ece6d6",
+        "#e8e2d2",
+        "#f3eee2",
+        "#e2ddd0"
+      ],
+      "walls": [
+        [
+          "#f2f0ea",
+          "#d9d6cc",
+          "solid"
+        ],
+        [
+          "#ebe6da",
+          "#cfc9bb",
+          "solid"
+        ],
+        [
+          "#efece4",
+          "#cfcabe",
+          "grille"
+        ]
+      ]
+    },
+    "Avenida Vereador Osvaldo Kushida": {
+      "photos": "27-29",
+      "houses": [
+        "#7fa6c9",
+        "#e9e3d3",
+        "#cfe0c4",
+        "#f0e6cf",
+        "#e6e1d6"
+      ],
+      "walls": [
+        [
+          "#9fbf8a",
+          "#7d9c6c",
+          "solid"
+        ],
+        [
+          "#efece4",
+          "#cfcabe",
+          "solid"
+        ],
+        [
+          "#b8b4aa",
+          "#9a958b",
+          "solid"
+        ],
+        [
+          "#ebe7de",
+          "#c9c4b8",
+          "grille"
+        ]
+      ]
+    },
+    "Avenida José Fábio Garcez Novaes": {
+      "photos": "47-51",
+      "houses": [
+        "#f2d36b",
+        "#c95a4f",
+        "#a9dcc6",
+        "#e9e5dc",
+        "#ede4d0"
+      ],
+      "walls": [
+        [
+          "#e8a58e",
+          "#c9826b",
+          "solid"
+        ],
+        [
+          "#efece4",
+          "#cfcabe",
+          "solid"
+        ],
+        [
+          "#ebe7de",
+          "#c9c4b8",
+          "grille"
+        ]
+      ]
+    },
+    "Avenida Maria Gonçalves Barbosa": {
+      "photos": "52-56",
+      "houses": [
+        "#f0ece3",
+        "#e9b7bf",
+        "#ece6d9",
+        "#c98e6a",
+        "#e4dfd3"
+      ],
+      "walls": [
+        [
+          "#a9a59c",
+          "#8e8a82",
+          "solid"
+        ],
+        [
+          "#f1eee7",
+          "#d2cec4",
+          "solid"
+        ],
+        [
+          "#b8664a",
+          "#93503a",
+          "solid"
+        ]
+      ]
+    },
+    "Avenida Sabino Roberto": {
+      "photos": "57-61",
+      "houses": [
+        "#f3f1ec",
+        "#e2ddd2",
+        "#d9d4c8",
+        "#ece6d8",
+        "#efe3cf"
+      ],
+      "walls": [
+        [
+          "#b8664a",
+          "#93503a",
+          "solid"
+        ],
+        [
+          "#f1eee7",
+          "#d2cec4",
+          "solid"
+        ],
+        [
+          "#ebe7de",
+          "#c9c4b8",
+          "grille"
+        ]
+      ]
+    },
+    "Rua Adolfo de Oliveira Martins": {
+      "photos": "40-41",
+      "houses": [
+        "#f2f0ea",
+        "#ebe7dd",
+        "#e7e2d6"
+      ],
+      "walls": [
+        [
+          "#efece4",
+          "#cfcabe",
+          "grille"
+        ],
+        [
+          "#f1eee7",
+          "#d2cec4",
+          "solid"
+        ]
+      ]
+    },
+    "Rua Gil Cândido da Silva": {
+      "photos": "24-25",
+      "houses": [
+        "#f0eee8",
+        "#d8d4ca",
+        "#ece8de"
+      ],
+      "walls": [
+        [
+          "#b0aca2",
+          "#94908a",
+          "solid"
+        ],
+        [
+          "#f1eee7",
+          "#d2cec4",
+          "solid"
+        ]
+      ]
     }
   }
 }
