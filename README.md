@@ -78,6 +78,14 @@ As panorâmicas de abril de 2026 fornecidas pelo usuário orientaram a igreja e 
 
 A interface usa uma barra de ferramentas lateral e minimapa navegável, inspirados nas referências. Nomes de ruas e lugares ficam em Ajustes; o botão do carro ativa/desativa o trânsito. Em acessibilidade com redução de movimento, todos os efeitos permanecem estáticos.
 
+## Vida, clima e interface (novembro de 2026)
+
+- **Nenhuma casa sobre a rua.** Depois do registro e dos ajustes abaixo, `scripts/street_trim.py` recorta, só na exibição, a parte de um contorno que cai sobre a pista mais 0,4 m de meio-fio. Quando sobraria menos da metade, a detecção é retida (`map.withheldBuildings`, 2 casos) em vez de desenhada; o contorno de origem continua no modelo. Um teste percorre as bordas de todas as construções exibidas contra a largura de cada via.
+- **Clima vivo.** Os códigos WMO da Open-Meteo viram sete cenas: céu limpo, poucas nuvens, nublado, neblina, garoa, chuva e tempestade com raios. As nuvens são cúmulos com topo iluminado, base acinzentada, sombra no chão e paletas de entardecer e noite; ficam mais ralas ao aproximar a câmera das ruas. Neblina usa bancos baixos que derivam com o vento. A chuva escurece o céu, molha o asfalto e cria respingos nas ruas.
+- **Gente na rua.** Pedestres ilustrativos andam pelas calçadas (deslocadas do eixo das vias) e pelos caminhos das praças, mais concentrados perto da Praça Maria Dias, com guarda-chuva na chuva e menos gente à noite. Ficam atrás das casas e árvores pela mesma máscara dos carros. É uma simulação local, não um registro de pessoas reais.
+- **Detalhes observados nas imagens aéreas do Apple Mapas, consultadas visualmente pelo autor em 8/11/2026:** painéis solares em parte dos telhados (desenhados na água voltada para o norte) e a terra vermelha das ruas de chão. Nenhum dado, nome de lugar ou imagem do Apple Mapas foi copiado.
+- **Interface de miniatura.** Painéis de vidro escuro, acento laranja e fonte Geist; faixa de lugares no topo com miniaturas desenhadas pelo próprio mapa; efeito *tilt-shift* com intensidade ajustável (tecla D); passeio automático pelos lugares; atalhos `0` (cidade inteira) e `/` (busca). O padrão de interface foi estudado no TinyRJ apenas pelo que é visível ao visitante (capturas, medidas, cores e fontes), sem copiar código, arte ou textos.
+
 ## Registro das construções às ruas
 
 A publicação no GitHub Pages regenera `public/data/map.json` com `scripts/prepare-map.py` antes dos testes e do build, a partir dos dados brutos versionados.
