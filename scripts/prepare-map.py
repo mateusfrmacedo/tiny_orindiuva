@@ -210,11 +210,34 @@ def clear_crown(t):
  p=Point(t[:2]);clearance=t[2]*.8
  return all(obstacles[int(i)].distance(p)>=clearance for i in obstacle_index.query(p.buffer(clearance)))
 trees=[t for t in trees if clear_crown(t)]
+# Entrance sign at the Trevo de Orindiúva (SP-322 x Vicinal Francisco Munhoz Porcel).
+# The island is the OSM roundabout; the sign layout follows the author's visual reading
+# of public street-level imagery (Jan 2025): an open heart and the letters ORINDIÚVA,
+# one colour per letter, on a long low exposed-brick wall facing traffic from the east.
+ring_ids={'166234395','454119770','454119773','454119774','454119776','454119777','454119778'}
+ring=[p for r in roads if r['id'] in ring_ids for p in r['points']]
+entrance_sign=None
+if ring:
+ cx=sum(p[0] for p in ring)/len(ring);cy=sum(p[1] for p in ring)/len(ring)
+ radius=sum(math.hypot(p[0]-cx,p[1]-cy) for p in ring)/len(ring)
+ island=radius-6
+ spec=visual_details['entranceSign']
+ ox,oy=spec['offsetFromIslandCentre']
+ facing=math.radians(spec['facingDegrees']);normal=[round(math.sin(facing),4),round(-math.cos(facing),4)]
+ entrance_sign={**spec,'centre':[round(cx+ox,2),round(cy+oy,2)],'normal':normal,'island':{'centre':[round(cx,2),round(cy,2)],'radius':round(island,2)}}
+ # Queen palms with whitewashed trunks ring the island.
+ sx,sy=entrance_sign['centre'];half=spec['wall']['length']*spec.get('displayScale',1)/2+3
+ for k in range(spec['palms']):
+  a=2*math.pi*k/spec['palms']+.35;rr=island*(.72 if k%2 else .55);px,py=cx+math.cos(a)*rr,cy+math.sin(a)*rr
+  # keep the lettering clear: no palm within the sign's band
+  if math.hypot(px-sx,py-sy)<half:continue
+  trees.append([round(px,2),round(py,2),2.4,'palm',3.6,'whitewash'])
+ places.append({'id':'trevo-orindiuva','type':'node','name':'Trevo de Orindiúva','kind':'attraction','point':entrance_sign['centre']})
 meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPerDegree':[104450,111320]},'bounds':[-49.369,-20.199,-49.335,-20.166],'sources':[{'name':'OpenStreetMap contributors','role':'Ruas, praças, caminhos, água e lugares','url':'https://www.openstreetmap.org/copyright','license':'ODbL-1.0'},{'name':'Microsoft Global ML Building Footprints / Bing','role':'Posição e contorno das construções detectadas em imagens aéreas','url':'https://github.com/microsoft/GlobalMLBuildingFootprints','license':'CDLA-Permissive-2.0','quadkey':'210133203','release':'2026-07-24'},{'name':'Prefeitura de Orindiúva','role':'Croqui urbanístico consultado para comparação; fevereiro/2021','url':'https://orindiuva.sp.gov.br/wp-content/uploads/2022/04/MAPA-DA-CIDADE-BAIRROS-Atualizado-Model.pdf'}],'visualReferenceRevision':visual_details['revision'],'syntheticBuildings':0,'limitations':'Footprints are machine detections, not a cadastral survey. Heights, roof colors and facades are illustrative. Individual trees are decorative within OSM parks/tree rows, streets and ESA 2021 tree-cover areas. Park paths and regional roof materials are schematic, refined from user-supplied aerial reference images. Landcover resolution is 10 m and may be outdated. No imagery files are embedded or redistributed; original building and road outlines remain from OSM/Microsoft. Separate display geometry may include bounded inferred street-grid alignment; the church visual outline is an estimate from owner references.'}
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]
 meta['sources'].append({'name':'ESA WorldCover 2021 v200','role':'Cobertura arbórea e água, resolução 10 m; recorte e simplificação','url':'https://esa-worldcover.org/en/data-access','license':'CC-BY-4.0','attribution':'© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium'})
-model={'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'streetTrimReport':street_trim_report,'withheldBuildings':withheld_buildings,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+model={'entranceSign':entrance_sign,'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'streetTrimReport':street_trim_report,'withheldBuildings':withheld_buildings,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
 (ROOT/'docs/placement-review.json').write_text(json.dumps(placement_report,ensure_ascii=False,indent=2)+'\n')
 (ROOT/'public/data/map.json').write_text(json.dumps(model,separators=(',',':'),ensure_ascii=False))
 print(len(roads),'road/path segments;',len(buildings),'real footprint geometries;',len(trees),'decorative trees in mapped cover; zero synthetic buildings')

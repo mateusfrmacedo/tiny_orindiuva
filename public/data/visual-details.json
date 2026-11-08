@@ -364,5 +364,66 @@
         }
       ]
     }
+  },
+  "entranceSign": {
+    "name": "Trevo de Orindiúva",
+    "reference": "Leitura visual do autor de imagens públicas ao nível da rua (janeiro de 2025); nenhuma imagem copiada",
+    "offsetFromIslandCentre": [
+      -4,
+      24
+    ],
+    "facingDegrees": 95,
+    "wall": {
+      "length": 12.6,
+      "height": 0.5,
+      "depth": 0.6,
+      "colour": "#a4553b"
+    },
+    "letterHeight": 1.35,
+    "depth": 0.32,
+    "glyphs": [
+      {
+        "char": "heart",
+        "colour": "#d83a33"
+      },
+      {
+        "char": "O",
+        "colour": "#2f6b35"
+      },
+      {
+        "char": "R",
+        "colour": "#d9a03a"
+      },
+      {
+        "char": "I",
+        "colour": "#4a1f24"
+      },
+      {
+        "char": "N",
+        "colour": "#8cc63f"
+      },
+      {
+        "char": "D",
+        "colour": "#1f2f6b"
+      },
+      {
+        "char": "I",
+        "colour": "#4b9be0"
+      },
+      {
+        "char": "Ú",
+        "colour": "#4a1f24"
+      },
+      {
+        "char": "V",
+        "colour": "#d8392f"
+      },
+      {
+        "char": "A",
+        "colour": "#d8392f"
+      }
+    ],
+    "palms": 10,
+    "displayScale": 1.8
   }
 }
