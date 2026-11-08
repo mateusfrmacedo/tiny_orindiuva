@@ -7,7 +7,8 @@ export const sceneModes={
  fog:{label:'Neblina',icon:'≋'},
  drizzle:{label:'Garoa',icon:'☂'},
  rain:{label:'Chuva',icon:'☂'},
- storm:{label:'Tempestade',icon:'⚡'}
+ storm:{label:'Tempestade',icon:'⚡'},
+ off:{label:'Sem clima',icon:'○'}
 };
 const precipitating=new Set(['drizzle','rain','storm']);
 export const isPrecipitating=mode=>precipitating.has(mode);
@@ -32,7 +33,9 @@ const defaults={
  fog:{coverage:.55,wind:4,darkness:.05,fog:.8},
  drizzle:{coverage:.88,wind:10,darkness:.14,fog:.18},
  rain:{coverage:.92,wind:18,darkness:.2,fog:.08},
- storm:{coverage:1,wind:38,darkness:.36,fog:.05}
+ storm:{coverage:1,wind:38,darkness:.36,fog:.05},
+ // Weather switched off: clear, still sky with no clouds, rain or fog.
+ off:{coverage:0,wind:0,darkness:0,fog:0}
 };
 export function sceneWeather(mode,current=null,live=true){
  const d=defaults[mode]||defaults.sun;
