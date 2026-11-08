@@ -90,6 +90,9 @@ for detail in visual_details['parks'].values():
  feature=next((b for b in buildings if b['id']==detail.get('reclassifyBuilding')),None)
  if feature:
   buildings.remove(feature);reference_corrections.append({'classification':'fountain','reference':detail['reference'],'reason':detail['correctionReason'],'originalFeature':feature})
+ for removal in detail.get('removeBuildings',[]):
+  feature=next((b for b in buildings if b['id']==removal['id']),None)
+  if feature:buildings.remove(feature);reference_corrections.append({'classification':'not-a-building','reference':detail['reference'],'reason':removal['reason'],'originalFeature':feature})
 for a in areas:
  rect=list(Polygon(a['points']).minimum_rotated_rectangle.exterior.coords)[:-1]
  i=max(range(4),key=lambda i:Point(rect[i]).distance(Point(rect[(i+1)%4])))
