@@ -67,6 +67,7 @@ function drawCivic(ctx,a,b,length,height,p,quad,c,hasSign,scale){
  const band=c.band;if(band)quad(0,height-band.height,length,band.height,band.colour,'#00000018',.06);
  if(c.parapet)quad(0,height-c.parapet.height,length,c.parapet.height,c.parapet.colour);
  if(c.edge)quad(0,height-.12,length,.12,c.edge);
+ for(const st of c.stripes||[])quad(0,st.z,length,st.height,st.colour);
  for(const [u,w]of [[0,c.pilaster?.width||0],[length-(c.pilaster?.width||0),c.pilaster?.width||0]])if(w&&length>4)quad(u,.05,w,height-(band?band.height:0)-.05,c.pilaster.colour);
  if(scale<1.2)return;
  const win=c.windows;if(win){const n=Math.max(1,Math.floor((length-2)/win.spacing)),gap=length/(n+1);for(let j=0;j<n;j++){const x=(j+1)*gap-win.width/2;if(hasSign&&c.door&&Math.abs(x+win.width/2-length*c.door.at)<c.door.width)continue;quad(x,win.sill,win.width,win.height,win.colour,win.frame||null,.06);if(win.louvre&&scale>2)for(let z=win.sill+.12;z<win.sill+win.height;z+=.16)quad(x+.05,z,win.width-.1,.035,'#7f7b70')}}
