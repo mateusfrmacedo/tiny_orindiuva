@@ -108,6 +108,10 @@ for a in areas:
   if a['visual'].get('lightRoofs'):
    for b in buildings:
     if Polygon(a['points']).contains(Point(b['centroid'])):b['roof']=6;b['roofMaterial']='metal'
+  # Kiosks inside a square keep the wall colours seen at street level.
+  for b in buildings:
+   style=a['visual'].get('buildingStyles',{}).get(b['id'])
+   if style:b['wallColor']=style['wall'];b['trimColor']=style['trim']
 # Warm inner-block ground replaces the blanket of grass between roofs.
 # Derive block limits from existing streets and cut out all mapped parks/facilities.
 building_cover=unary_union([Polygon(b['points']) for b in buildings])

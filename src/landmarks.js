@@ -42,6 +42,17 @@ export function drawLandmark(ctx,area,project,scale){
   line([[.06,.06],[.94,.94]],'#d7c6a3',2.4);line([[.06,.94],[.94,.06]],'#d7c6a3',2.4);circle(.5,.5,5,'#d4c19d');
   for(const [u,v]of [[.3,.15],[.7,.85],[.15,.7],[.85,.3]])bench(u,v);
   if(scale>1.5)for(let t=0;t<Math.PI*2;t+=Math.PI/12){const u=.5+Math.cos(t)*radius/frame.width,v=.5+Math.sin(t)*radius/frame.height;line([[u-.008,v-.008],[u+.008,v+.008]],'#ab987a',.15)}
+ }else if(area.visual?.pattern==='jair-nunes-square'){
+  // Praça Jair Nunes dos Santos: rose-beige interlocking pavers, a concrete
+  // strip with parking along the avenue, and kerbed lawn islands between paths.
+  const vis=area.visual,strip=vis.concreteStrip||.075;
+  shape(outline,'#d2bfac');
+  if(scale>1.3){ctx.save();ctx.globalAlpha=.32;for(let k=-1;k<=2;k+=1.2/frame.width){line([[k,0],[k+.42,1]],'#a99482',.06);line([[k+.42,0],[k,1]],'#a99482',.06)}ctx.restore()}
+  rect(-.05,-.05,1.1,strip+.05,'#d8d4ca');line([[-.05,strip],[1.05,strip]],'#f1efe8',.45);
+  if(scale>1)for(let u=0;u<1;u+=2.6/frame.width)line([[u,.004],[u,strip-.012]],'#b9b4a8',.06);
+  for(const [u0,u1]of vis.accessibleBays||[]){rect(u0,.006,u1-u0,strip-.02,null,'#e3a63a');for(let u=u0;u<u1-.004;u+=.9/frame.width)line([[u,.008],[Math.min(u1,u+.03),strip-.014]],'#e7aa3c',.18)}
+  const grow=(pts,m)=>{const c=pts.reduce((s,p)=>[s[0]+p[0]/pts.length,s[1]+p[1]/pts.length],[0,0]);return pts.map(([u,v])=>{const du=(u-c[0])*frame.width,dv=(v-c[1])*frame.height,d=Math.hypot(du,dv)||1;return [u+du/d*m/frame.width,v+dv/d*m/frame.height]})};
+  for(const lawn of vis.lawns||[]){shape(grow(lawn,.3).map(p=>uv(...p)),'#ebe8df','#bdb7aa',.08);shape(lawn.map(p=>uv(...p)),'#7fae55');if(scale>1.4){ctx.save();ctx.globalAlpha=.25;shape(grow(lawn,-.8).map(p=>uv(...p)),'#93bd63');ctx.restore()}}
  }else if(area.visual?.pattern==='formal-garden'){
   shape(outline,'#a2b17a');for(const u of [.12,.38,.64,.88])line([[u,.06],[u,.94]],'#e0d4b7',2.6);for(const v of [.12,.5,.88])line([[.06,v],[.94,v]],'#e0d4b7',2.6);line([[.06,.06],[.94,.94]],'#e0d4b7',2.5);line([[.06,.94],[.94,.06]],'#e0d4b7',2.5);
   for(const [u,v]of [[.2,.18],[.45,.18],[.7,.82],[.45,.82]])bench(u,v);
@@ -55,5 +66,58 @@ export function drawLandmark(ctx,area,project,scale){
   }
   for(const [a,b]of [[.26,.16],[.26,.84],[.73,.16],[.73,.84]])bench(a,b);
  }
+ ctx.restore();
+}
+// Street furniture for squares studied at street level: red portal frames,
+// swan-neck lamp posts, slatted benches, litter bins and young trees in round
+// concrete planters. Positions come from the park's visual details in u/v.
+export function squareProps(area){
+ const vis=area.visual||{},fr=area.frame;if(!fr)return [];
+ const W=fr.width,H=fr.height,uHat=fr.u.map(x=>x/W),vHat=fr.v.map(x=>x/H);
+ const at=(u,v)=>fr.origin.map((o,j)=>o+fr.u[j]*u+fr.v[j]*v),dirOf=(du,dv)=>{const d=[uHat[0]*du+vHat[0]*dv,uHat[1]*du+vHat[1]*dv],l=Math.hypot(...d)||1;return [d[0]/l,d[1]/l]};
+ const props=[];
+ if(vis.portals){const {from,to,count,width,height,colour}=vis.portals,along=dirOf((to[0]-from[0])*W,(to[1]-from[1])*H),across=[-along[1],along[0]];
+  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:across,width,height,colour,r:1.5})}}
+ for(const [u,v]of vis.lamps||[])props.push({kind:'lamp',p:at(u,v),dir:dirOf(0,1),r:1.2});
+ for(const [u,v,du,dv]of vis.benches||[])props.push({kind:'bench',p:at(u,v),dir:dirOf(du,dv),r:.6});
+ for(const [u,v]of vis.bins||[])props.push({kind:'bin',p:at(u,v),dir:dirOf(1,0),r:.4});
+ for(const [u,v]of vis.saplings||[])props.push({kind:'sapling',p:at(u,v),dir:dirOf(1,0),r:.8});
+ return props;
+}
+
+function poly(ctx,pts,fill,stroke,width=.06){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
+// An axis-aligned box in the prop's own frame: a along dir, b across it.
+function box(ctx,iso,c,dir,a0,a1,b0,b1,z0,z1,[light,dark,top]){const n=[-dir[1],dir[0]],P=(a,b)=>[c[0]+dir[0]*a+n[0]*b,c[1]+dir[1]*a+n[1]*b];
+ const corners=[P(a0,b0),P(a1,b0),P(a1,b1),P(a0,b1)],mid=[(corners[0][0]+corners[2][0])/2,(corners[0][1]+corners[2][1])/2];
+ const faces=corners.map((p,i)=>{const q=corners[(i+1)%4],m=[(p[0]+q[0])/2,(p[1]+q[1])/2],out=[m[0]-mid[0],m[1]-mid[1]];return {p,q,facing:out[0]+out[1],east:out[0]>out[1]}}).filter(f=>f.facing>1e-6).sort((x,y)=>x.facing-y.facing);
+ for(const f of faces)poly(ctx,[iso(f.p,z0),iso(f.q,z0),iso(f.q,z1),iso(f.p,z1)],f.east?dark:light);
+ poly(ctx,corners.map(p=>iso(p,z1)),top);
+}
+
+export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir;
+ if(prop.kind==='portal'){const w=prop.width/2,h=prop.height,s=.24,col=[prop.colour||'#cd6c55','#a4513f','#de8a73'];
+  // Two square posts and a lintel, painted terracotta like the photo.
+  box(ctx,iso,c,dir,-w-s,-w+s,-s,s,0,h,col);box(ctx,iso,c,dir,w-s,w+s,-s,s,0,h,col);box(ctx,iso,c,dir,-w-s,w+s,-s,s,h-.5,h,col);return}
+ if(prop.kind==='lamp'){const base=iso(c,0),top=iso(c,4.3),arm=[c[0]+dir[0]*.75,c[1]+dir[1]*.75],end=iso(arm,4.25),hang=iso(arm,3.85);
+  ctx.strokeStyle='#2f3935';ctx.lineCap='round';ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(...base);ctx.lineTo(...top);ctx.quadraticCurveTo(...iso([c[0]+dir[0]*.55,c[1]+dir[1]*.55],4.75),...end);ctx.lineTo(...hang);ctx.stroke();
+  poly(ctx,[iso([c[0]-.18,c[1]-.18],0),iso([c[0]+.18,c[1]-.18],0),iso([c[0]+.18,c[1]+.18],0),iso([c[0]-.18,c[1]+.18],0)],'#3a4440');
+  ctx.beginPath();ctx.arc(...iso(arm,3.6),.3,0,Math.PI*2);ctx.fillStyle='#f3f1e6';ctx.fill();ctx.strokeStyle='#aeb3ad';ctx.lineWidth=.05;ctx.stroke();return}
+ if(prop.kind==='bench'){if(scale<.8)return;const legs='#33393a';
+  for(const a of [-.75,.75])box(ctx,iso,c,dir,a-.05,a+.05,-.22,.22,0,.42,[legs,legs,legs]);
+  box(ctx,iso,c,dir,-.9,.9,-.22,.22,.4,.47,['#a8754a','#875c38','#b9875a']);
+  box(ctx,iso,c,dir,-.9,.9,.2,.26,.47,.85,['#a8754a','#875c38','#b9875a']);return}
+ if(prop.kind==='bin'){if(scale<1)return;box(ctx,iso,c,dir,-.04,.04,-.04,.04,0,1,['#3b4240','#2c3230','#454c4a']);
+  box(ctx,iso,c,dir,-.36,-.04,-.16,.16,.55,1.05,['#2f3534','#232827','#3a403f']);box(ctx,iso,c,dir,.04,.36,-.16,.16,.55,1.05,['#e9e9e2','#c9cac3','#f4f4ee']);return}
+ if(prop.kind==='sapling'){const ring=Array.from({length:20},(_,i)=>{const t=i*Math.PI/10;return [c[0]+Math.cos(t)*.6,c[1]+Math.sin(t)*.6]});
+  poly(ctx,ring.map(p=>iso(p,.25)),'#d9d4c9','#aaa596',.05);poly(ctx,ring.map(([x,y])=>iso([c[0]+(x-c[0])*.72,c[1]+(y-c[1])*.72],.26)),'#7a5a3e');
+  ctx.strokeStyle='#6d5a43';ctx.lineWidth=.08;ctx.beginPath();ctx.moveTo(...iso(c,.25));ctx.lineTo(...iso(c,1.9));ctx.stroke();
+  for(const [dx,dy,z,r]of [[0,0,2.05,.42],[.25,-.1,1.75,.3],[-.2,.15,1.8,.28]]){ctx.beginPath();ctx.arc(...iso([c[0]+dx,c[1]+dy],z),r,0,Math.PI*2);ctx.fillStyle=dx>0?'#86ad55':'#6f9844';ctx.fill()}}
+}
+
+// Lamp globes glow after the night overlay; no pool of light on the ground.
+export function drawSquareLights(ctx,props,iso,lamps){if(lamps<.05)return;ctx.save();
+ for(const prop of props){if(prop.kind!=='lamp')continue;const arm=[prop.p[0]+prop.dir[0]*.75,prop.p[1]+prop.dir[1]*.75],q=iso(arm,3.6);
+  const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],1.4);g.addColorStop(0,`rgba(255,236,190,${.85*lamps})`);g.addColorStop(.3,`rgba(255,222,160,${.35*lamps})`);g.addColorStop(1,'rgba(255,214,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(q[0],q[1],1.4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=`rgba(255,247,222,${lamps})`;ctx.beginPath();ctx.arc(q[0],q[1],.3,0,Math.PI*2);ctx.fill()}
  ctx.restore();
 }

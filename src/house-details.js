@@ -12,7 +12,7 @@ export function makeHouseStyle(b,shape,segments){
    if(score<best){best=score;front=i}
   }
  });
- return {seed,wall:walls[seed%walls.length],trim:trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
+ return {seed,wall:b.wallColor||walls[seed%walls.length],trim:b.trimColor||trim[seed%trim.length],front,hip:seed%5<3&&b.area<700,garage:b.area>60&&b.area<500&&seed%4!==0};
 }
 
 const materialCache=new Map();
