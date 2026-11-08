@@ -55,6 +55,26 @@ export function drawLandmark(ctx,area,project,scale){
   for(const [u0,u1]of vis.accessibleBays||[]){rect(u0,.006,u1-u0,strip-.02,null,'#e3a63a');for(let u=u0;u<u1-.004;u+=.9/frame.width)line([[u,.008],[Math.min(u1,u+.03),strip-.014]],'#e7aa3c',.18)}
   const grow=(pts,m)=>{const c=pts.reduce((s,p)=>[s[0]+p[0]/pts.length,s[1]+p[1]/pts.length],[0,0]);return pts.map(([u,v])=>{const du=(u-c[0])*frame.width,dv=(v-c[1])*frame.height,d=Math.hypot(du,dv)||1;return [u+du/d*m/frame.width,v+dv/d*m/frame.height]})};
   for(const lawn of vis.lawns||[]){shape(grow(lawn,.3).map(p=>uv(...p)),'#ebe8df','#bdb7aa',.08);shape(lawn.map(p=>uv(...p)),'#7fae55');if(scale>1.4){ctx.save();ctx.globalAlpha=.25;shape(grow(lawn,-.8).map(p=>uv(...p)),'#93bd63');ctx.restore()}}
+ }else if(area.visual?.pattern==='open-park'){
+  // Praça Caxalu: an open lawn at the edge of town with a parking strip and
+  // yellow bays on the street side, a red cycle lane round the lawn and
+  // curving paved walks meeting at small round plazas (street-level photos).
+  const vis=area.visual,pk=vis.parking||.09;shape(outline,'#8bb060');
+  rect(-.05,-.05,1.1,pk+.05,'#d3c9b9');line([[-.05,pk],[1.05,pk]],'#f2f0e8',.5);
+  if(scale>.9)for(let u=.01;u<1;u+=2.5/frame.width)line([[u,.008],[u,pk-.012]],'#e0b23c',.12);
+  const U=x=>x/frame.width,V=y=>y/frame.height,loop=([u0,v0,u1,v1],r)=>{const pts=[];for(const [cu,cv,a0]of [[u1-U(r),v1-V(r),0],[u0+U(r),v1-V(r),Math.PI/2],[u0+U(r),v0+V(r),Math.PI],[u1-U(r),v0+V(r),Math.PI*1.5]])for(let k=0;k<=6;k++){const t=a0+k*Math.PI/12;pts.push([cu+Math.cos(t)*U(r),cv+Math.sin(t)*V(r)])}pts.push(pts[0]);return pts};
+  const lane=loop(vis.cycleLane||[.03,pk+.03,.97,.97],7);line(lane,'#dccbab',3.8);line(lane,'#b5483b',1.9);
+  if(scale>1.4){ctx.setLineDash([.7,.7]);line(lane,'#f3eee4',.08);ctx.setLineDash([])}
+  for(const [a,b,c]of vis.walks||[]){const pts=[];for(let k=0;k<=18;k++){const t=k/18;pts.push([(1-t)*(1-t)*a[0]+2*(1-t)*t*b[0]+t*t*c[0],(1-t)*(1-t)*a[1]+2*(1-t)*t*b[1]+t*t*c[1]])}line(pts,'#c4b597',2.8);line(pts,'#ddd0b2',2.2)}
+  for(const [u,v,r]of vis.plazas||[])circle(u,v,r,'#ddd0b2','#b9ab8b',.25);
+  if(vis.sand)for(const [u,v,r]of vis.sand)circle(u,v,r,'#e2cf9e','#c7b17d',.2);
+ }else if(area.visual?.pattern==='corner-garden'){
+  // Praça Flávia Marina: lawn triangles between diagonal red-earth paths,
+  // edged by a rust-coloured concrete sidewalk (street-level photos).
+  shape(outline,'#c49d82');const c=area.points.reduce((s,p)=>[s[0]+p[0]/area.points.length,s[1]+p[1]/area.points.length],[0,0]),inset=area.points.map(p=>{const d=Math.hypot(c[0]-p[0],c[1]-p[1])||1,m=area.visual.sidewalk||2.6;return [p[0]+(c[0]-p[0])/d*m,p[1]+(c[1]-p[1])/d*m]});
+  shape(inset.map(p=>project(p)),'#84ad57','#d9d2c4',.35);
+  for(const p of inset){ctx.beginPath();ctx.moveTo(...project(p));ctx.lineTo(...project(c));ctx.strokeStyle='#b97e58';ctx.lineWidth=1.7;ctx.stroke()}
+  ctx.beginPath();ctx.arc(...project(c),1.9,0,Math.PI*2);ctx.fillStyle='#b97e58';ctx.fill();
  }else if(area.visual?.pattern==='formal-garden'){
   shape(outline,'#a2b17a');for(const u of [.12,.38,.64,.88])line([[u,.06],[u,.94]],'#e0d4b7',2.6);for(const v of [.12,.5,.88])line([[.06,v],[.94,v]],'#e0d4b7',2.6);line([[.06,.06],[.94,.94]],'#e0d4b7',2.5);line([[.06,.94],[.94,.06]],'#e0d4b7',2.5);
   for(const [u,v]of [[.2,.18],[.45,.18],[.7,.82],[.45,.82]])bench(u,v);
@@ -88,8 +108,24 @@ export function squareProps(area){
  for(const [u,v,du,dv]of vis.stoneBenches||[])props.push({kind:'stoneBench',p:at(u,v),dir:dirOf(du,dv),r:.6});
  for(const [u,v]of vis.poles||[])props.push({kind:'pole',p:at(u,v),dir:dirOf(1,0),r:2.2});
  for(const [u,v,w,d,h]of vis.kiosks||[])props.push({kind:'kiosk',p:at(u,v),dir:dirOf(1,0),w,d,h,r:1.4});
+ for(const [u,v,du,dv]of vis.phones||[])props.push({kind:'phone',p:at(u,v),dir:dirOf(du,dv),r:.9});
+ for(const [u,v,h]of vis.palms||[])props.push({kind:'palm',p:at(u,v),dir:dirOf(1,0),h:h||7.5,r:2.6});
+ for(const [u,v,du,dv]of vis.playgrounds||[])props.push({kind:'playground',p:at(u,v),dir:dirOf(du,dv),r:5});
+ // A brick gateway in a painted perimeter wall (cemetery), with posts and coping.
+ let gate=null;if(vis.gate){const g=vis.gate;gate={kind:'gate',p:at(...g.at),dir:dirOf(g.along[0]*W,g.along[1]*H),width:g.width,height:g.height,text:g.text,colour:g.colour,brick:g.brick,r:4};props.push(gate)}
+ if(vis.perimeterWall){const w=vis.perimeterWall,pts=area.points,list=[];for(let i=0;i<pts.length;i++)list.push({a:pts[i],b:pts[(i+1)%pts.length],h:w.height,colour:w.colour,cap:w.cap,post:w.post});
+  const clear=gate?gate.width/2+1.6:0;props.push(...wallProps(list).filter(p=>!gate||Math.hypot(p.p[0]-gate.p[0],p.p[1]-gate.p[1])>clear+p.len/2))}
  return props;
 }
+// Front walls (muros) split into short pieces so they sort with the houses
+// and trees around them; the middle piece of a long front carries the gate.
+export function wallProps(list){const out=[];
+ for(const w of list){const L=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]);if(L<.5)continue;const n=Math.max(1,Math.ceil(L/3.6)),dir=[(w.b[0]-w.a[0])/L,(w.b[1]-w.a[1])/L];
+  for(let k=0;k<n;k++){const t=(k+.5)/n;out.push({kind:'wall',p:[w.a[0]+(w.b[0]-w.a[0])*t,w.a[1]+(w.b[1]-w.a[1])*t],dir,len:L/n,h:w.h||2,colour:w.colour,cap:w.cap,post:w.post,style:w.style||'solid',gate:!!w.gate&&k===Math.floor(n/2),r:L/n/2+.4})}}
+ return out;
+}
+const shade=(hex,f)=>{const n=parseInt(hex.slice(1,7),16),c=[n>>16,n>>8&255,n&255].map(x=>Math.max(0,Math.min(255,Math.round(x*f))));return '#'+c.map(x=>x.toString(16).padStart(2,'0')).join('')};
+const tone=hex=>[hex,shade(hex,.8),shade(hex,1.06)];
 
 function poly(ctx,pts,fill,stroke,width=.06){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
 // An axis-aligned box in the prop's own frame: a along dir, b across it.
@@ -132,6 +168,35 @@ export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir
  if(prop.kind==='kiosk'){const w=prop.w/2,d=prop.d/2,h=prop.h;box(ctx,iso,c,dir,-w,w,-d,d,0,h,['#f2f1ec','#d6d5cf','#e9e8e2']);
   // Service window band on the sides facing the square.
   box(ctx,iso,c,dir,-w-.02,w+.02,-d-.02,d+.02,1.1,1.75,['#55615f','#46504e','#e9e8e2']);box(ctx,iso,c,dir,-w-.15,w+.15,-d-.15,d+.15,h,h+.12,['#e6e5df','#c9c8c2','#f6f5f0']);return}
+ if(prop.kind==='wall'){if(scale<.55)return;const L=prop.len/2,t=.1,h=prop.h;
+  if(prop.style==='grille'){box(ctx,iso,c,dir,-L,L,-t,t,0,.7,tone(prop.colour));box(ctx,iso,c,dir,-L,L,-.03,.03,.7,h,['rgba(96,104,104,.55)','rgba(70,76,76,.6)','#7b8382']);if(scale>2)for(let a=-L+.15;a<L;a+=.3)box(ctx,iso,c,dir,a-.02,a+.02,-.035,.035,.7,h,['#5d6564','#4b5251','#6d7574']);return}
+  if(prop.gate){const g=Math.min(L-.15,1.6);box(ctx,iso,c,dir,-L,-g,-t,t,0,h,tone(prop.colour));box(ctx,iso,c,dir,g,L,-t,t,0,h,tone(prop.colour));box(ctx,iso,c,dir,-g,g,-.05,.05,0,h-.15,['#6c7271','#575d5c','#7b8180']);if(scale>2)for(let a=-g+.2;a<g;a+=.25)box(ctx,iso,c,dir,a-.015,a+.015,-.06,.06,.1,h-.25,['#555b5a','#474c4b','#606665'])}
+  else box(ctx,iso,c,dir,-L,L,-t,t,0,h,tone(prop.colour));
+  if(prop.cap&&!prop.gate)box(ctx,iso,c,dir,-L,L,-t-.04,t+.04,h,h+.12,tone(prop.cap));
+  if(prop.post)box(ctx,iso,c,dir,-L-.22,-L+.22,-.22,.22,0,h+.35,tone(prop.post));return}
+ if(prop.kind==='gate'){const w=prop.width/2,pw=1.3,h=prop.height,n=[-dir[1],dir[0]],brick=tone(prop.brick),green=tone(prop.colour);
+  for(const a of [-w-pw,w])box(ctx,iso,c,dir,a,a+pw,-.6,.6,0,h,brick);
+  if(scale>1.6){ctx.save();ctx.globalAlpha=.35;for(const a of [-w-pw,w])for(let z=.3;z<h;z+=.3)poly(ctx,[iso([c[0]+dir[0]*a+n[0]*.6,c[1]+dir[1]*a+n[1]*.6],z),iso([c[0]+dir[0]*(a+pw)+n[0]*.6,c[1]+dir[1]*(a+pw)+n[1]*.6],z)],null,'#8c4b33',.03),poly(ctx,[iso([c[0]+dir[0]*a-n[0]*.6,c[1]+dir[1]*a-n[1]*.6],z),iso([c[0]+dir[0]*(a+pw)-n[0]*.6,c[1]+dir[1]*(a+pw)-n[1]*.6],z)],null,'#8c4b33',.03);ctx.restore()}
+  box(ctx,iso,c,dir,-w,w,-.04,.04,0,2.8,['rgba(83,128,98,.75)','rgba(66,104,80,.8)','#5f8d6f']);
+  const bw=w+pw+1.5;box(ctx,iso,c,dir,-bw,bw,-.32,.32,2.95,3.55,green);
+  // Lettering on whichever long face of the beam the camera sees, read left to right.
+  if(scale>1.2&&prop.text){const s=(n[0]+n[1])>0?.33:-.33,P=(a,z)=>iso([c[0]+dir[0]*a+n[0]*s,c[1]+dir[1]*a+n[1]*s],z),fw=P(1,0)[0]>P(-1,0)[0]?1:-1,o=P(-bw*fw,3.55),ux=P(-bw*fw+fw,3.55),vz=P(-bw*fw,2.55);
+   ctx.save();ctx.transform(ux[0]-o[0],ux[1]-o[1],vz[0]-o[0],vz[1]-o[1],o[0],o[1]);ctx.scale(.01,.01);ctx.fillStyle='#e8dcae';ctx.font='700 40px Georgia, serif';ctx.textAlign='center';ctx.textBaseline='middle';let size=40;while(ctx.measureText(prop.text).width>bw*2*92&&size>8){size*=.92;ctx.font=`700 ${size}px Georgia, serif`}ctx.fillText(prop.text,bw*100,30);ctx.restore()}
+  return}
+ if(prop.kind==='phone'){if(scale<1)return;ctx.strokeStyle='#5f6668';ctx.lineWidth=.12;ctx.beginPath();ctx.moveTo(...iso(c,0));ctx.lineTo(...iso(c,2.1));ctx.stroke();
+  // Two "orelhão" hoods back to back, one green and one orange.
+  for(const [k,col]of [[-1,'#7fae86'],[1,'#e2843a']]){const q=iso([c[0]+dir[0]*k*.42,c[1]+dir[1]*k*.42],1.75);ctx.beginPath();ctx.ellipse(q[0],q[1],.46,.62,k*.35,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();ctx.beginPath();ctx.ellipse(q[0]+k*.1,q[1]+.08,.28,.44,k*.35,0,Math.PI*2);ctx.fillStyle=shade(col,.62);ctx.fill()}return}
+ if(prop.kind==='palm'){const h=prop.h,top=iso(c,h);ctx.strokeStyle='#8f8676';ctx.lineCap='round';ctx.lineWidth=.34;ctx.beginPath();ctx.moveTo(...iso(c,0));ctx.quadraticCurveTo(...iso([c[0]+.35,c[1]-.25],h*.55),...top);ctx.stroke();
+  for(let k=0;k<10;k++){const t=k*Math.PI/5+.3,mid=iso([c[0]+Math.cos(t)*1.4,c[1]+Math.sin(t)*1.4],h+.65),end=iso([c[0]+Math.cos(t)*2.5,c[1]+Math.sin(t)*2.5],h-1.2);ctx.strokeStyle=k%2?'#4c8538':'#64a34a';ctx.lineWidth=.42;ctx.beginPath();ctx.moveTo(...top);ctx.quadraticCurveTo(...mid,...end);ctx.stroke()}return}
+ if(prop.kind==='playground'){if(scale<.8)return;const n=[-dir[1],dir[0]],P=(a,b)=>[c[0]+(dir[0]*a+n[0]*b)*1.6,c[1]+(dir[1]*a+n[1]*b)*1.6],red='#c9362f',yel='#e8b928';
+  const sand=Array.from({length:24},(_,i)=>{const t=i*Math.PI/12;return iso(P(Math.cos(t)*4,Math.sin(t)*2.6),0)});poly(ctx,sand,'#e0cc98','#c9b27e',.06);
+  // Swing set: red A-frames and a yellow top bar; slide tower with a red chute.
+  ctx.lineCap='round';const stroke=(pts,col,w)=>{ctx.strokeStyle=col;ctx.lineWidth=w;ctx.beginPath();pts.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](...p));ctx.stroke()};
+  for(const a of [-3,-.6])stroke([iso(P(a,-.8),0),iso(P(a,0),2.4),iso(P(a,.8),0)],red,.14);stroke([iso(P(-3,0),2.4),iso(P(-.6,0),2.4)],yel,.14);
+  for(const a of [-2.3,-1.3]){stroke([iso(P(a,0),2.4),iso(P(a,0),.55)],'#59605f',.04);box(ctx,iso,P(a,0),dir,-.25,.25,-.12,.12,.5,.58,['#2f3533','#232827','#3a403e'])}
+  for(const a of [1,1.9])for(const b of [-.45,.45])box(ctx,iso,P(a,b),dir,-.06,.06,-.06,.06,0,2.2,tone(yel));box(ctx,iso,P(1.45,0),dir,-.55,.55,-.55,.55,1.3,1.42,tone(red));
+  poly(ctx,[iso(P(1.9,-.35),1.35),iso(P(1.9,.35),1.35),iso(P(3.6,.35),.25),iso(P(3.6,-.35),.25)],red,'#8f2622',.05);
+  poly(ctx,[iso(P(.85,-.6),2.2),iso(P(2.05,-.6),2.2),iso(P(2.05,.6),2.2),iso(P(.85,.6),2.2),iso(P(1.45,0),2.9)],'#3b78b9','#2a5786',.05);return}
  if(prop.kind==='bench'){if(scale<.8)return;const legs='#33393a';
   for(const a of [-.75,.75])box(ctx,iso,c,dir,a-.05,a+.05,-.22,.22,0,.42,[legs,legs,legs]);
   box(ctx,iso,c,dir,-.9,.9,-.22,.22,.4,.47,['#a8754a','#875c38','#b9875a']);
