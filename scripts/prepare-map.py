@@ -138,7 +138,10 @@ from visual_alignment import align_buildings
 alignment_report=align_buildings(buildings,roads,areas)
 from placement_clearance import correct_placement
 placement_report=correct_placement(buildings,roads,areas)
-def display_points(building):return building.get('placement',building.get('alignment',building))['points']
+from street_trim import trim_buildings
+buildings,withheld_buildings,street_trim_report=trim_buildings(buildings,roads)
+print('Street trim:',street_trim_report)
+def display_points(building):return (building.get('clearance') or building.get('placement') or building.get('alignment') or building)['points']
 building_cover=unary_union([Polygon(display_points(b)) for b in buildings])
 managed_parks=unary_union([Polygon(a['points']) for a in areas if a['kind']=='park'])
 
@@ -211,7 +214,7 @@ meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPe
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]
 meta['sources'].append({'name':'ESA WorldCover 2021 v200','role':'Cobertura arbórea e água, resolução 10 m; recorte e simplificação','url':'https://esa-worldcover.org/en/data-access','license':'CC-BY-4.0','attribution':'© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium'})
-model={'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+model={'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'streetTrimReport':street_trim_report,'withheldBuildings':withheld_buildings,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
 (ROOT/'docs/placement-review.json').write_text(json.dumps(placement_report,ensure_ascii=False,indent=2)+'\n')
 (ROOT/'public/data/map.json').write_text(json.dumps(model,separators=(',',':'),ensure_ascii=False))
 print(len(roads),'road/path segments;',len(buildings),'real footprint geometries;',len(trees),'decorative trees in mapped cover; zero synthetic buildings')
