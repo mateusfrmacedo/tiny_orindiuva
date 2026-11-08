@@ -134,7 +134,7 @@ church=next(p for p in places if 'Santa Terezinha'in p['name'])
 church_building=min(buildings,key=lambda b:Polygon(b['points']).distance(Point(church['point'])))
 # Lower residential eaves reflect the predominantly single-storey drone reference.
 for building in buildings:
- if building['heightSource']=='illustrative':building['h']=3.2 if building['area']<400 else 4.2 if building['area']<900 else 5.5
+ if building['heightSource']=='illustrative' and not building.get('civic',{}).get('height'):building['h']=3.2 if building['area']<400 else 4.2 if building['area']<900 else 5.5
 church_building['landmark']='church';church_building['name']=church['name'];church_building['h']=12;church_building['roof']=6;church_building['roofMaterial']='metal'
 # Local visual frame for the owner's church photographs. Keep the original
 # detected footprint unchanged and record the illustrative architectural extent.
@@ -251,7 +251,50 @@ meta={'snapshot':'2026-11-06','projection':{'origin':[-49.351,-20.182],'metersPe
 urban=max(unary_union([Polygon(b['points']).buffer(22) for b in buildings]).geoms,key=lambda p:p.area).bounds
 meta['urbanBounds']=[round(v,2) for v in urban]
 meta['sources'].append({'name':'ESA WorldCover 2021 v200','role':'Cobertura arbórea e água, resolução 10 m; recorte e simplificação','url':'https://esa-worldcover.org/en/data-access','license':'CC-BY-4.0','attribution':'© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium'})
-model={'entranceSign':entrance_sign,'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'streetTrimReport':street_trim_report,'withheldBuildings':withheld_buildings,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'trees':trees,'places':places,'meta':meta}
+
+# Streets photographed at street level: house colours and front walls (muros)
+# from the Street View collection. Walls run parallel to the facade that faces
+# the street, between house and sidewalk; nothing is added where a house
+# already stands on the sidewalk or where the wall would cross another
+# footprint, a mapped area or a road.
+street_styles={k:v for k,v in visual_details.get('streets',{}).items() if isinstance(v,dict)}
+front_walls=[]
+if street_styles:
+ named=[r for r in roads if r.get('name') in street_styles]
+ shapes={b['id']:Polygon(display_points(b)) for b in buildings}
+ from shapely.strtree import STRtree
+ order=list(shapes);index=STRtree([shapes[i] for i in order])
+ blocked=unary_union([Polygon(a['points']) for a in areas]+[LineString(r['points']).buffer(r['width']/2+1.2) for r in roads if r['kind']!='footway'])
+ def clear_line(line,own):
+  if line.intersects(blocked):return False
+  return not any(order[i]!=own and shapes[order[i]].intersects(line.buffer(.25)) for i in index.query(line.buffer(.25)))
+ for b in buildings:
+  if b.get('landmark') or b.get('wallColor') or b['area']>900:continue
+  poly=shapes[b['id']];near=min(((LineString(r['points']).distance(poly),r) for r in named),key=lambda z:z[0],default=(99,None))
+  if near[0]>16:continue
+  road=near[1];style=street_styles[road['name']];seed=int(hashlib.sha256(b['id'].encode()).hexdigest()[:8],16)
+  b['streetWall']=style['houses'][seed%len(style['houses'])]
+  pts=list(poly.exterior.coords)[:-1]
+  if not poly.exterior.is_ccw:pts=pts[::-1]
+  line=LineString(road['points']);best=None
+  for i,a in enumerate(pts):
+   c=pts[(i+1)%len(pts)];L=math.hypot(c[0]-a[0],c[1]-a[1])
+   if L<3:continue
+   n=((c[1]-a[1])/L,-(c[0]-a[0])/L);m=Point((a[0]+c[0])/2,(a[1]+c[1])/2);d=line.distance(m);q=line.interpolate(line.project(m))
+   if d>0 and ((q.x-m.x)*n[0]+(q.y-m.y)*n[1])/d>.8 and (best is None or d<best[0]):best=(d,a,c,n,L)
+  if not best:continue
+  d,a,c,n,L=best;setback=d-road['width']/2-1.8
+  if setback<1.3 or setback>9:continue
+  colour,cap,kind=style['walls'][(seed//7)%len(style['walls'])]
+  out=lambda p:[round(p[0]+n[0]*setback,2),round(p[1]+n[1]*setback,2)]
+  if not clear_line(LineString([out(a),out(c)]),b['id']):continue
+  base={'h':2.0,'colour':colour,'cap':cap,'style':kind}
+  front_walls.append(dict(base,a=out(a),b=out(c),gate=L>6 and kind=='solid'))
+  for p in (a,c):
+   side=LineString([[round(p[0]+n[0]*.4,2),round(p[1]+n[1]*.4,2)],out(p)])
+   if clear_line(side,b['id']):front_walls.append(dict(base,a=[round(p[0],2),round(p[1],2)],b=out(p),gate=False))
+ print('Front walls:',len(front_walls),'pieces on',len(named),'photographed street segments')
+model={'entranceSign':entrance_sign,'registrationReport':registration_report,'alignmentReport':alignment_report,'placementReport':{k:v for k,v in placement_report.items() if k!='review'},'streetTrimReport':street_trim_report,'withheldBuildings':withheld_buildings,'referenceCorrections':reference_corrections,'urbanBlocks':urban_blocks,'roadSurfaces':road_surfaces,'network':network,'landcover':landcover,'center':church['point'],'roads':roads,'areas':areas,'waterways':waterways,'buildings':buildings,'frontWalls':front_walls,'trees':trees,'places':places,'meta':meta}
 (ROOT/'docs/placement-review.json').write_text(json.dumps(placement_report,ensure_ascii=False,indent=2)+'\n')
 (ROOT/'public/data/map.json').write_text(json.dumps(model,separators=(',',':'),ensure_ascii=False))
 print(len(roads),'road/path segments;',len(buildings),'real footprint geometries;',len(trees),'decorative trees in mapped cover; zero synthetic buildings')
