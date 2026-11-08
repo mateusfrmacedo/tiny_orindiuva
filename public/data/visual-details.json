@@ -78,7 +78,117 @@
           3.1
         ]
       ],
-      "plantingNote": "Schematic rounded shade-tree groups from owner aerial views, kept clear of the basin, paths and mapped buildings; not surveyed tree positions."
+      "plantingNote": "Schematic rounded shade-tree groups from owner aerial views, kept clear of the basin, paths and mapped buildings; not surveyed tree positions.",
+      "stoneBenches": [
+        [
+          0.7706,
+          0.5503,
+          -0.259,
+          0.966
+        ],
+        [
+          0.7525,
+          0.6207,
+          -0.707,
+          0.707
+        ],
+        [
+          0.7212,
+          0.6613,
+          -0.966,
+          0.259
+        ],
+        [
+          0.6851,
+          0.6613,
+          -0.966,
+          -0.259
+        ],
+        [
+          0.6538,
+          0.6207,
+          -0.707,
+          -0.707
+        ],
+        [
+          0.6357,
+          0.5503,
+          -0.259,
+          -0.966
+        ],
+        [
+          0.6357,
+          0.4691,
+          0.259,
+          -0.966
+        ],
+        [
+          0.6538,
+          0.3988,
+          0.707,
+          -0.707
+        ],
+        [
+          0.6851,
+          0.3582,
+          0.966,
+          -0.259
+        ],
+        [
+          0.7212,
+          0.3582,
+          0.966,
+          0.259
+        ],
+        [
+          0.7525,
+          0.3988,
+          0.707,
+          0.707
+        ],
+        [
+          0.7706,
+          0.4691,
+          0.259,
+          0.966
+        ]
+      ],
+      "poles": [
+        [
+          0.55,
+          0.3
+        ],
+        [
+          0.55,
+          0.72
+        ],
+        [
+          0.86,
+          0.3
+        ],
+        [
+          0.86,
+          0.72
+        ],
+        [
+          0.36,
+          0.5
+        ],
+        [
+          0.16,
+          0.5
+        ]
+      ],
+      "kiosks": [
+        [
+          0.1,
+          0.3,
+          2.6,
+          1.9,
+          2.5
+        ]
+      ],
+      "streetReference": "Street View of the square (2025), studied by eye: white concrete benches ringing the tiled fountain, tall single-arm LED poles, round-trimmed trees and a small white kiosk; nothing copied."
     },
     "425624220": {
       "pattern": "jair-nunes-square",
@@ -1188,5 +1298,94 @@
     ],
     "palms": 10,
     "displayScale": 1.8
+  },
+  "buildings": {
+    "ms-608c553f5c4129ea": {
+      "name": "Prefeitura Municipal",
+      "reference": "Street View, R. Alfredo de Toledo (2025), studied by eye; nothing copied.",
+      "wall": "#b8c597",
+      "trim": "#e27c66",
+      "height": 5.2,
+      "band": {
+        "height": 0.75,
+        "colour": "#e27c66"
+      },
+      "parapet": {
+        "height": 0.45,
+        "colour": "#d5d79b"
+      },
+      "edge": "#f4f1e6",
+      "pilaster": {
+        "width": 1.2,
+        "colour": "#e27c66"
+      },
+      "windows": {
+        "spacing": 3.4,
+        "width": 2.2,
+        "height": 1.9,
+        "sill": 0.85,
+        "colour": "#2f3734",
+        "frame": "#55605a"
+      },
+      "door": {
+        "at": 0.5,
+        "width": 1.6,
+        "height": 2.4,
+        "colour": "#3a2f2c"
+      },
+      "sign": {
+        "text": "Prefeitura Municipal",
+        "z": 2.55,
+        "height": 1.25,
+        "width": 11,
+        "colour": "#f4f6f2",
+        "italic": true,
+        "font": "Georgia, serif"
+      }
+    },
+    "ms-018e517701c334e0": {
+      "name": "E.M.E.F. Prof. Osvaldo Alves Ferreira",
+      "reference": "Street View, R. Horacina Andrade Borges (2025), studied by eye; nothing copied.",
+      "wall": "#f1f1ec",
+      "trim": "#2f5bc0",
+      "height": 5.2,
+      "band": {
+        "height": 1.5,
+        "colour": "#2f5bc0"
+      },
+      "edge": "#2a4fa8",
+      "windows": {
+        "spacing": 4.2,
+        "width": 1.6,
+        "height": 1.0,
+        "sill": 1.75,
+        "colour": "#b6b2a6",
+        "louvre": true
+      },
+      "door": {
+        "at": 0.62,
+        "width": 2.2,
+        "height": 2.6,
+        "colour": "#2f6aa8"
+      },
+      "awning": {
+        "at": 0.62,
+        "width": 3.6,
+        "depth": 3.2,
+        "height": 2.9,
+        "rise": 1.1,
+        "colour": "#3b8fe0",
+        "posts": "#6d9cc9"
+      },
+      "sign": {
+        "text": "E.M.E.F. PROF. OSVALDO ALVES FERREIRA",
+        "z": 3.75,
+        "height": 1.25,
+        "width": 18,
+        "at": 0.4,
+        "panel": "#2b4ba3",
+        "colour": "#ffffff"
+      }
+    }
   }
 }
