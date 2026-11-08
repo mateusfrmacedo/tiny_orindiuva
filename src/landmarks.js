@@ -80,7 +80,7 @@ export function squareProps(area){
  const props=[];
  if(vis.portals){const {from,to,count,width,height,colour}=vis.portals,along=dirOf((to[0]-from[0])*W,(to[1]-from[1])*H),across=[-along[1],along[0]];
   // Arches stand side by side along the row (an open box frame when a depth is given).
-  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:along,width,depth:vis.portals.depth||0,arch:!!vis.portals.arch,height,colour,r:2})}}
+  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:vis.portals.across?across:along,width,depth:vis.portals.depth||0,arch:!!vis.portals.arch,lamps:!!vis.portals.lamps,height,colour,r:2.5})}}
  for(const [u,v]of vis.lamps||[])props.push({kind:'lamp',p:at(u,v),dir:dirOf(0,1),r:1.2});
  for(const [u,v,du,dv]of vis.benches||[])props.push({kind:'bench',p:at(u,v),dir:dirOf(du,dv),r:.6});
  for(const [u,v]of vis.bins||[])props.push({kind:'bin',p:at(u,v),dir:dirOf(1,0),r:.4});
@@ -97,6 +97,7 @@ function box(ctx,iso,c,dir,a0,a1,b0,b1,z0,z1,[light,dark,top]){const n=[-dir[1],
  poly(ctx,corners.map(p=>iso(p,z1)),top);
 }
 
+const portalLamps=prop=>prop.lamps?[-1,0,1].map(k=>[prop.p[0]+prop.dir[0]*k*prop.width*.36,prop.p[1]+prop.dir[1]*k*prop.width*.36]):[];
 export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir;
  if(prop.kind==='portal'&&prop.arch){const w=prop.width/2,s=.32,t=.3,h=prop.height,k=1.15,n=[-dir[1],dir[0]];
   // A round-topped arch standing across the path, seen face-on; its shadow
@@ -113,7 +114,9 @@ export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir
   // Posts first, back row before front, then the beams that tie them at the top.
   for(const b of [...ends].sort((x,y)=>x-y))for(const a of [-w,w])box(ctx,iso,c,dir,a-s,a+s,b-s,b+s,0,h,col);
   if(d)for(const a of [-w,w])box(ctx,iso,c,dir,a-s,a+s,-d-s,d+s,h-.4,h,col);
-  for(const b of ends)box(ctx,iso,c,dir,-w-s,w+s,b-s,b+s,h-.5,h,col);return}
+  for(const b of ends)box(ctx,iso,c,dir,-w-s,w+s,b-s,b+s,h-.5,h,col);
+  // Globe lamps along the lintel, as in the night photo.
+  for(const a of portalLamps(prop)){ctx.beginPath();ctx.arc(...iso(a,h+.22),.22,0,Math.PI*2);ctx.fillStyle='#f4f2e8';ctx.fill();ctx.strokeStyle='#b9bcb4';ctx.lineWidth=.04;ctx.stroke()}return}
  if(prop.kind==='lamp'){const base=iso(c,0),top=iso(c,4.3),arm=[c[0]+dir[0]*.75,c[1]+dir[1]*.75],end=iso(arm,4.25),hang=iso(arm,3.85);
   ctx.strokeStyle='#2f3935';ctx.lineCap='round';ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(...base);ctx.lineTo(...top);ctx.quadraticCurveTo(...iso([c[0]+dir[0]*.55,c[1]+dir[1]*.55],4.75),...end);ctx.lineTo(...hang);ctx.stroke();
   poly(ctx,[iso([c[0]-.18,c[1]-.18],0),iso([c[0]+.18,c[1]-.18],0),iso([c[0]+.18,c[1]+.18],0),iso([c[0]-.18,c[1]+.18],0)],'#3a4440');
@@ -132,8 +135,11 @@ export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir
 
 // Lamp globes glow after the night overlay; no pool of light on the ground.
 export function drawSquareLights(ctx,props,iso,lamps){if(lamps<.05)return;ctx.save();
- for(const prop of props){if(prop.kind!=='lamp')continue;const arm=[prop.p[0]+prop.dir[0]*.75,prop.p[1]+prop.dir[1]*.75],q=iso(arm,3.6);
+ // The portal frames are lit red at night (owner's night photo).
+ for(const prop of props){if(prop.kind!=='portal'||prop.arch||prop.depth)continue;const w=prop.width/2,d=prop.dir,P=(k,z)=>iso([prop.p[0]+d[0]*k,prop.p[1]+d[1]*k],z);
+  ctx.save();ctx.shadowColor=`rgba(235,40,52,${lamps})`;ctx.shadowBlur=6;ctx.strokeStyle=`rgba(226,44,54,${.9*lamps})`;ctx.lineWidth=.42;ctx.lineJoin='miter';ctx.beginPath();ctx.moveTo(...P(-w,0));ctx.lineTo(...P(-w,prop.height));ctx.lineTo(...P(w,prop.height));ctx.lineTo(...P(w,0));ctx.stroke();ctx.restore()}
+ for(const prop of props){const globes=prop.kind==='lamp'?[iso([prop.p[0]+prop.dir[0]*.75,prop.p[1]+prop.dir[1]*.75],3.6)]:portalLamps(prop).map(p=>iso(p,prop.height+.22));for(const q of globes){
   const g=ctx.createRadialGradient(q[0],q[1],0,q[0],q[1],1.4);g.addColorStop(0,`rgba(255,236,190,${.85*lamps})`);g.addColorStop(.3,`rgba(255,222,160,${.35*lamps})`);g.addColorStop(1,'rgba(255,214,150,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(q[0],q[1],1.4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=`rgba(255,247,222,${lamps})`;ctx.beginPath();ctx.arc(q[0],q[1],.3,0,Math.PI*2);ctx.fill()}
+  ctx.fillStyle=`rgba(255,247,222,${lamps})`;ctx.beginPath();ctx.arc(q[0],q[1],.3,0,Math.PI*2);ctx.fill()}}
  ctx.restore();
 }
