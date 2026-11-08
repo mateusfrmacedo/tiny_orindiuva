@@ -1341,7 +1341,8 @@
         "colour": "#f4f6f2",
         "italic": true,
         "font": "Georgia, serif"
-      }
+      },
+      "flatRoof": true
     },
     "ms-018e517701c334e0": {
       "name": "E.M.E.F. Prof. Osvaldo Alves Ferreira",
@@ -1385,6 +1386,454 @@
         "at": 0.4,
         "panel": "#2b4ba3",
         "colour": "#ffffff"
+      },
+      "flatRoof": true
+    },
+    "ms-a8195ad7004eabac": {
+      "name": "Escola Municipal Joaquim Mendonça",
+      "reference": "Street View collection streetview_orindiuva (03, Rua Miguel Bueno Guimarães, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#2f7b5c",
+      "trim": "#d4776a",
+      "height": 4.3,
+      "edge": "#eceeea",
+      "pilaster": {
+        "width": 0.9,
+        "colour": "#d4776a"
+      },
+      "stripes": [
+        {
+          "z": 2.0,
+          "height": 0.55,
+          "colour": "#a9aeab"
+        }
+      ],
+      "windows": {
+        "spacing": 5.2,
+        "width": 2.6,
+        "height": 0.55,
+        "sill": 2.0,
+        "colour": "#c9b9a3",
+        "frame": "#e8e6e0"
+      },
+      "door": {
+        "at": 0.62,
+        "width": 2.0,
+        "height": 2.4,
+        "colour": "#3d4a4c"
+      },
+      "awning": {
+        "at": 0.62,
+        "width": 4.2,
+        "depth": 1.8,
+        "height": 3.2,
+        "rise": 0.05,
+        "colour": "#f1f2ee",
+        "posts": "#f1f2ee"
+      },
+      "flatRoof": true
+    },
+    "ms-46b64ef28364182f": {
+      "name": "Câmara Municipal",
+      "reference": "Street View collection streetview_orindiuva (16, R. José Garcês Novaes, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#d3cec4",
+      "trim": "#bdb6aa",
+      "height": 5.2,
+      "band": {
+        "height": 1.5,
+        "colour": "#c9c3b8"
+      },
+      "edge": "#e7e3db",
+      "windows": {
+        "spacing": 4,
+        "width": 1.3,
+        "height": 1.3,
+        "sill": 1.0,
+        "colour": "#2f3539",
+        "frame": "#e8e4dc"
+      },
+      "door": {
+        "at": 0.35,
+        "width": 1.8,
+        "height": 2.5,
+        "colour": "#2b3034"
+      },
+      "sign": {
+        "text": "Câmara Municipal",
+        "z": 3.75,
+        "height": 1.25,
+        "width": 10,
+        "colour": "#8299b0",
+        "italic": true,
+        "font": "Georgia, serif"
+      },
+      "flatRoof": true
+    },
+    "ms-a12aab94a070f590": {
+      "name": "Anfiteatro Municipal",
+      "reference": "Street View collection streetview_orindiuva (18, Av. da Saudade, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#ddd6c6",
+      "trim": "#c9c1b0",
+      "height": 6.2,
+      "band": {
+        "height": 1.6,
+        "colour": "#d2cab9"
+      },
+      "windows": {
+        "spacing": 2.7,
+        "width": 2.3,
+        "height": 2.0,
+        "sill": 0.4,
+        "colour": "#3f6f72",
+        "frame": "#2e3436"
+      },
+      "door": {
+        "at": 0.45,
+        "width": 2.4,
+        "height": 2.4,
+        "colour": "#33494c"
+      },
+      "sign": {
+        "text": "ANFITEATRO MUNICIPAL",
+        "z": 4.75,
+        "height": 1.2,
+        "width": 7,
+        "at": 0.8,
+        "panel": "#3b62b4",
+        "colour": "#ffffff"
+      },
+      "flatRoof": true
+    },
+    "ms-97c1948af516651e": {
+      "name": "Centro de Saúde Maria Aparecida de Oliveira",
+      "reference": "Street View collection streetview_orindiuva (22, Av. Francisco Tomás Aquino, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#3f7b4b",
+      "trim": "#f2f2f0",
+      "height": 4.8,
+      "band": {
+        "height": 1.35,
+        "colour": "#f1f1ef"
+      },
+      "stripes": [
+        {
+          "z": 2.55,
+          "height": 0.4,
+          "colour": "#d5463d"
+        }
+      ],
+      "windows": {
+        "spacing": 3.6,
+        "width": 1.6,
+        "height": 1.0,
+        "sill": 1.35,
+        "colour": "#dfe6e4",
+        "frame": "#f4f4f2"
+      },
+      "door": {
+        "at": 0.5,
+        "width": 2.4,
+        "height": 2.4,
+        "colour": "#3b4547"
+      },
+      "sign": {
+        "text": "CENTRO DE SAÚDE MARIA APARECIDA DE OLIVEIRA",
+        "z": 3.5,
+        "height": 1.25,
+        "width": 22,
+        "colour": "#7f8891"
+      },
+      "flatRoof": true
+    },
+    "osm-1110117235": {
+      "name": "Correios",
+      "reference": "Street View collection streetview_orindiuva (26, Av. Ver. Osvaldo Kushida, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#eee4c8",
+      "trim": "#2c4c9b",
+      "height": 4.2,
+      "edge": "#f6f1e2",
+      "windows": {
+        "spacing": 4,
+        "width": 1.8,
+        "height": 0.9,
+        "sill": 1.9,
+        "colour": "#f3f3ef",
+        "frame": "#d8d6cf"
+      },
+      "door": {
+        "at": 0.4,
+        "width": 1.6,
+        "height": 2.3,
+        "colour": "#5b5a55"
+      },
+      "awning": {
+        "at": 0.4,
+        "width": 3.4,
+        "depth": 1.1,
+        "height": 2.5,
+        "rise": 0.45,
+        "colour": "#2b3f8c",
+        "posts": "#2b3f8c"
+      },
+      "sign": {
+        "text": "Correios",
+        "z": 2.95,
+        "height": 0.95,
+        "width": 4.6,
+        "at": 0.4,
+        "panel": "#ffffff",
+        "colour": "#2d4c9a"
+      },
+      "flatRoof": true
+    },
+    "ms-91754dc6e94b1a9e": {
+      "name": "Delegacia de Polícia",
+      "reference": "Street View collection streetview_orindiuva (35, Av. Francisco Tomás Aquino, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#f3f3f1",
+      "trim": "#1f2224",
+      "height": 4.4,
+      "band": {
+        "height": 1.1,
+        "colour": "#202326"
+      },
+      "stripes": [
+        {
+          "z": 0.05,
+          "height": 0.55,
+          "colour": "#d06b5e"
+        },
+        {
+          "z": 2.75,
+          "height": 0.18,
+          "colour": "#202326"
+        }
+      ],
+      "windows": {
+        "spacing": 3.8,
+        "width": 1.5,
+        "height": 0.9,
+        "sill": 1.4,
+        "colour": "#2f5f9e",
+        "frame": "#24272a"
+      },
+      "door": {
+        "at": 0.5,
+        "width": 1.4,
+        "height": 2.3,
+        "colour": "#2c3033"
+      },
+      "sign": {
+        "text": "POLÍCIA CIVIL",
+        "z": 3.3,
+        "height": 1.1,
+        "width": 8,
+        "colour": "#ffffff"
+      },
+      "flatRoof": true
+    },
+    "ms-b0dfaa6b7a435a6c": {
+      "name": "Supermercado Munhoz",
+      "reference": "Street View collection streetview_orindiuva (46, R. José Garcês Novaes, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#ebe9e5",
+      "trim": "#d63c35",
+      "height": 6.6,
+      "stripes": [
+        {
+          "z": 2.9,
+          "height": 0.45,
+          "colour": "#d63c35"
+        }
+      ],
+      "edge": "#f5f4f1",
+      "windows": {
+        "spacing": 3.4,
+        "width": 1.6,
+        "height": 1.2,
+        "sill": 3.8,
+        "colour": "#3a4144",
+        "frame": "#d9d7d2"
+      },
+      "door": {
+        "at": 0.3,
+        "width": 3.2,
+        "height": 2.6,
+        "colour": "#43403b"
+      },
+      "sign": {
+        "text": "Supermercado MUNHOZ",
+        "z": 3.6,
+        "height": 1.5,
+        "width": 8,
+        "at": 0.3,
+        "panel": "#f7f6f3",
+        "colour": "#d33a33"
+      },
+      "flatRoof": true
+    },
+    "osm-1110117234": {
+      "name": "Terminal Rodoviário",
+      "reference": "Street View collection streetview_orindiuva (33, Rod. Armando S. Oliveira, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#4f7d68",
+      "trim": "#f0f0ee",
+      "height": 5.0,
+      "band": {
+        "height": 1.0,
+        "colour": "#eeeeec"
+      },
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 2.0,
+        "sill": 0.3,
+        "colour": "#33413c",
+        "frame": "#e6e6e2"
+      },
+      "flatRoof": true
+    },
+    "ms-3990457145127072": {
+      "name": "Prédio de arcos junto à Praça Maria Dias",
+      "reference": "Street View collection streetview_orindiuva (14, R. Alfredo de Tolêdo, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#e6cfa6",
+      "trim": "#f2e8d6",
+      "height": 5.0,
+      "edge": "#f4ead8",
+      "band": {
+        "height": 0.6,
+        "colour": "#efe2c8"
+      },
+      "windows": {
+        "spacing": 2.6,
+        "width": 1.2,
+        "height": 2.4,
+        "sill": 0.6,
+        "colour": "#5a4a3c",
+        "frame": "#f3e9d8"
+      }
+    },
+    "ms-7a6f5efaa81261ee": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-93bdb5e7d643214f": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-13894100956b64da": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-6e763437df548e38": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-75239c33bcd2dea3": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-2e5f989a25202964": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-83e275423344af9b": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
+      }
+    },
+    "ms-384b4e85b5ef39cc": {
+      "name": "E.E. Antônio Marin",
+      "reference": "Street View collection streetview_orindiuva (31, Av. José Nunes dos Santos, Jan 2025), studied by eye; nothing copied.",
+      "wall": "#efe2c3",
+      "trim": "#f6f3ea",
+      "edge": "#f7f3e8",
+      "windows": {
+        "spacing": 3.2,
+        "width": 1.8,
+        "height": 1.1,
+        "sill": 1.2,
+        "colour": "#9ea7a6",
+        "frame": "#f4f1e8",
+        "louvre": true
       }
     }
   }
