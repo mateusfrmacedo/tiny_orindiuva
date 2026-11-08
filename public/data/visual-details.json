@@ -98,65 +98,72 @@
         ],
         "roofOutline": [
           [
-            -10.5,
+            -7.5,
+            15
+          ],
+          [
+            7.5,
             15
           ],
           [
             10.5,
-            15
+            12
           ],
           [
             10.5,
             5
           ],
           [
-            17,
+            16,
             5
           ],
           [
-            17,
-            -6
+            16,
+            -7
           ],
           [
             10.5,
-            -6
+            -7
           ],
           [
             10.5,
-            -15
+            -14
           ],
           [
             -10.5,
-            -15
+            -14
           ],
           [
             -10.5,
-            -6
+            -7
           ],
           [
-            -17,
-            -6
+            -16,
+            -7
           ],
           [
-            -17,
+            -16,
             5
           ],
           [
             -10.5,
             5
+          ],
+          [
+            -10.5,
+            12
           ]
         ],
-        "eaveHeight": 6.8,
-        "roofPitch": 0.42,
+        "eaveHeight": 7.2,
+        "roofPitch": 0.34,
         "towerBounds": [
-          -2.4,
-          12.8,
-          2.4,
-          17.6
+          -2.2,
+          13.2,
+          2.2,
+          17.4
         ],
-        "towerHeight": 16.5,
-        "spireHeight": 22.5,
-        "crossHeight": 24.1,
+        "towerHeight": 10.6,
+        "spireHeight": 15.4,
         "referenceAlignment": {
           "squareCornersPixels": [
             [
@@ -177,7 +184,67 @@
             ]
           ],
           "method": "Approximate affine comparison against the four existing OSM square corners; offset in original church right/forward metres. Roof heights and perspective displacement are not measured."
-        }
+        },
+        "roofParts": [
+          [
+            [
+              -10.5,
+              -14
+            ],
+            [
+              10.5,
+              -14
+            ],
+            [
+              10.5,
+              12
+            ],
+            [
+              7.5,
+              15
+            ],
+            [
+              -7.5,
+              15
+            ],
+            [
+              -10.5,
+              12
+            ]
+          ],
+          [
+            [
+              -16,
+              -7
+            ],
+            [
+              16,
+              -7
+            ],
+            [
+              16,
+              5
+            ],
+            [
+              -16,
+              5
+            ]
+          ]
+        ],
+        "corniceHeight": 0.5,
+        "frontSteps": [
+          -6.5,
+          15,
+          6.5,
+          19.6
+        ],
+        "sideRamp": [
+          -15.6,
+          4.6,
+          -10.4,
+          9.2
+        ],
+        "photoReference": "Owner aerial 360 photo of Praça Maria Dias, April 2026: chamfered facade, three-storey tower with ochre cornice and slate spire, grey-framed arched openings, dark-grey pilasters, metal cross on top of the spire, front steps and railed side ramp. Proportions estimated by eye; no image copied."
       },
       "planting": [
         {
