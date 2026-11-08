@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {hipRoofPlanes} from '../src/roofs.js';
 import {makeHouseStyle} from '../src/house-details.js';
-import {atmosphere,sceneWeather} from '../src/weather.js';
+import {atmosphere,sceneWeather,sceneModes,isPrecipitating} from '../src/weather.js';
 const area=p=>Math.abs(p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a[0]*b[1]-a[1]*b[0]},0))/2;
 test('hip roofs tile the exact rotated footprint with continuous ridges',()=>{
  for(const angle of [0,.27,.91,1.8])for(const dimensions of [[8,21],[12,12],[7,34]]){
@@ -18,9 +18,19 @@ test('frontage selection follows the street-facing edge and is deterministic',()
   const style=makeHouseStyle(b,shape,segments);assert.equal(style.front,expected);assert.deepEqual(style,makeHouseStyle(b,shape,segments));
  }
 });
-test('rain stays visible at night, and frozen precipitation is not mistaken for rain',()=>{
- for(const code of [51,55,61,65,80,82,95,99])assert.equal(atmosphere(code,0),'rain');
- for(const code of [45,48,71,75,85,86])assert.notEqual(atmosphere(code,1),'rain');
+test('precipitation stays visible at night, and frozen precipitation or fog is not mistaken for rain',()=>{
+ for(const code of [51,55])assert.equal(atmosphere(code,0),'drizzle');
+ for(const code of [61,65,80,82])assert.equal(atmosphere(code,0),'rain');
+ for(const code of [95,96,99])assert.equal(atmosphere(code,0),'storm');
+ for(const code of [51,61,95])assert.ok(isPrecipitating(atmosphere(code,0)));
+ for(const code of [45,48])assert.equal(atmosphere(code,1),'fog');
+ for(const code of [45,48,71,75,85,86])assert.ok(!isPrecipitating(atmosphere(code,1)));
+});
+test('every scene mode has bounded, distinct sky conditions',()=>{
+ for(const mode of Object.keys(sceneModes)){const w=sceneWeather(mode,null,false);assert.equal(w.mode,mode);for(const k of ['coverage','rain','darkness','fog'])assert.ok(w[k]>=0&&w[k]<=1,mode+k);assert.equal(w.rain>0,isPrecipitating(mode),mode)}
+ assert.ok(sceneWeather('storm',null,false).lightning);assert.ok(!sceneWeather('rain',null,false).lightning);
+ assert.ok(sceneWeather('storm',null,false).darkness>sceneWeather('rain',null,false).darkness);assert.ok(sceneWeather('rain',null,false).rain>sceneWeather('drizzle',null,false).rain);
+ assert.ok(sceneWeather('fog',null,false).fog>.5);assert.equal(sceneWeather('fog',null,false).birds,false);assert.ok(sceneWeather('drizzle',null,false).fine);
 });
 test('weather uses bounded live coverage and wind; previews ignore live numbers',()=>{
  const w={cloud_cover:88,precipitation:2,wind_speed_10m:30,wind_direction_10m:270};
