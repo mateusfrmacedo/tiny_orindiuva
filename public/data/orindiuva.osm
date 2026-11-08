@@ -6366,6 +6366,226 @@
   <nd ref="14054330577"/>
   <tag k="highway" v="secondary_link"/>
  </way>
+ <!-- Trevo de Orindiúva: rotatória e acessos (OpenStreetMap via Overpass, 2026-11-08), recorte de ~420 m em volta do trevo -->
+ <node id="1777036296" lat="-20.1573073" lon="-49.3256477"/>
+ <node id="4249196435" lat="-20.1574513" lon="-49.3256163"/>
+ <node id="1777036298" lat="-20.1575694" lon="-49.3255725"/>
+ <node id="4249196437" lat="-20.1576990" lon="-49.3255045"/>
+ <node id="7842375283" lat="-20.1577952" lon="-49.3254116"/>
+ <node id="1777036311" lat="-20.1578415" lon="-49.3253218"/>
+ <node id="1777036297" lat="-20.1583862" lon="-49.3247110"/>
+ <node id="1777036307" lat="-20.1575779" lon="-49.3249119"/>
+ <node id="1777036314" lat="-20.1571038" lon="-49.3251413"/>
+ <node id="7842161845" lat="-20.1568028" lon="-49.3253574"/>
+ <node id="4507420636" lat="-20.1565448" lon="-49.3255448"/>
+ <node id="1777036304" lat="-20.1559819" lon="-49.3258910"/>
+ <node id="7842161849" lat="-20.1565269" lon="-49.3256906"/>
+ <node id="7842161847" lat="-20.1566322" lon="-49.3256475"/>
+ <node id="7842161848" lat="-20.1568054" lon="-49.3256162"/>
+ <node id="7842161846" lat="-20.1569504" lon="-49.3256038"/>
+ <node id="1777036309" lat="-20.1571632" lon="-49.3256175"/>
+ <node id="7842161853" lat="-20.1577890" lon="-49.3257124"/>
+ <node id="4507420637" lat="-20.1581819" lon="-49.3249178"/>
+ <node id="7491350492" lat="-20.1681228" lon="-49.3200399"/>
+ <node id="1777036300" lat="-20.1570237" lon="-49.3253771"/>
+ <node id="1777036302" lat="-20.1577744" lon="-49.3249914"/>
+ <node id="4249196434" lat="-20.1572341" lon="-49.3256431"/>
+ <node id="7842161850" lat="-20.1570260" lon="-49.3254255"/>
+ <node id="4249196432" lat="-20.1570532" lon="-49.3254943"/>
+ <node id="10157493146" lat="-20.1570986" lon="-49.3255589"/>
+ <node id="4249196431" lat="-20.1570597" lon="-49.3252272"/>
+ <node id="4327211772" lat="-20.1570324" lon="-49.3253079"/>
+ <node id="7842161843" lat="-20.1573729" lon="-49.3249830"/>
+ <node id="1777036331" lat="-20.1571867" lon="-49.3250678"/>
+ <node id="4249196433" lat="-20.1571505" lon="-49.3250948"/>
+ <node id="4249196436" lat="-20.1577181" lon="-49.3249472"/>
+ <node id="7842161851" lat="-20.1576568" lon="-49.3249172"/>
+ <node id="7842161852" lat="-20.1578456" lon="-49.3252377"/>
+ <node id="4249196438" lat="-20.1578461" lon="-49.3251705"/>
+ <node id="7842161844" lat="-20.1578368" lon="-49.3251197"/>
+ <node id="4327211773" lat="-20.1578138" lon="-49.3250548"/>
+ <node id="4936362551" lat="-20.1530578" lon="-49.3273004"/>
+ <way id="166234395">
+  <nd ref="1777036296"/>
+  <nd ref="4249196435"/>
+  <nd ref="1777036298"/>
+  <nd ref="4249196437"/>
+  <nd ref="7842375283"/>
+  <nd ref="1777036311"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="166234396">
+  <nd ref="1777036297"/>
+  <nd ref="1777036307"/>
+  <tag k="highway" v="primary_link"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="166234397">
+  <nd ref="1777036314"/>
+  <nd ref="7842161845"/>
+  <nd ref="4507420636"/>
+  <nd ref="1777036304"/>
+  <tag k="highway" v="primary_link"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="166234399">
+  <nd ref="1777036304"/>
+  <nd ref="7842161849"/>
+  <nd ref="7842161847"/>
+  <nd ref="7842161848"/>
+  <nd ref="7842161846"/>
+  <nd ref="1777036309"/>
+  <tag k="highway" v="primary_link"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="166234401">
+  <nd ref="1640085998"/>
+  <nd ref="7842161853"/>
+  <nd ref="7842375283"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="name" v="Rodovia Vicinal Francisco Munhoz Porcel"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SPA 523/322"/>
+  <tag k="maxspeed" v="40"/>
+ </way>
+ <way id="166234406">
+  <nd ref="1777036311"/>
+  <nd ref="4507420637"/>
+  <nd ref="1777036297"/>
+  <tag k="highway" v="primary_link"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="228066262">
+  <nd ref="1777036297"/>
+  <nd ref="7491350492"/>
+  <tag k="highway" v="primary"/>
+  <tag k="name" v="Rodovia Armando Salles de Oliveira"/>
+  <tag k="oneway" v="no"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SP-322"/>
+  <tag k="maxspeed" v="100"/>
+ </way>
+ <way id="228066264">
+  <nd ref="1777036300"/>
+  <nd ref="1777036302"/>
+  <tag k="highway" v="primary"/>
+  <tag k="name" v="Rodovia Armando Salles de Oliveira"/>
+  <tag k="oneway" v="no"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SP-322"/>
+  <tag k="maxspeed" v="100"/>
+ </way>
+ <way id="228066329">
+  <nd ref="1777036296"/>
+  <nd ref="1640085998"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="name" v="Rodovia Vicinal Francisco Munhoz Porcel"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SPA 523/322"/>
+  <tag k="maxspeed" v="40"/>
+ </way>
+ <way id="454119770">
+  <nd ref="1777036309"/>
+  <nd ref="4249196434"/>
+  <nd ref="1777036296"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119773">
+  <nd ref="1777036300"/>
+  <nd ref="7842161850"/>
+  <nd ref="4249196432"/>
+  <nd ref="10157493146"/>
+  <nd ref="1777036309"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119774">
+  <nd ref="1777036314"/>
+  <nd ref="4249196431"/>
+  <nd ref="4327211772"/>
+  <nd ref="1777036300"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119776">
+  <nd ref="1777036307"/>
+  <nd ref="7842161843"/>
+  <nd ref="1777036331"/>
+  <nd ref="4249196433"/>
+  <nd ref="1777036314"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119777">
+  <nd ref="1777036302"/>
+  <nd ref="4249196436"/>
+  <nd ref="7842161851"/>
+  <nd ref="1777036307"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119778">
+  <nd ref="1777036311"/>
+  <nd ref="7842161852"/>
+  <nd ref="4249196438"/>
+  <nd ref="7842161844"/>
+  <nd ref="4327211773"/>
+  <nd ref="1777036302"/>
+  <tag k="highway" v="secondary"/>
+  <tag k="junction" v="circular"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+ <way id="454119779">
+  <nd ref="1777036302"/>
+  <nd ref="1777036297"/>
+  <tag k="highway" v="primary"/>
+  <tag k="name" v="Rodovia Armando Salles de Oliveira"/>
+  <tag k="oneway" v="no"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SP-322"/>
+  <tag k="maxspeed" v="100"/>
+ </way>
+ <way id="454119780">
+  <nd ref="1777036304"/>
+  <nd ref="1777036300"/>
+  <tag k="highway" v="primary"/>
+  <tag k="name" v="Rodovia Armando Salles de Oliveira"/>
+  <tag k="oneway" v="no"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SP-322"/>
+  <tag k="maxspeed" v="100"/>
+ </way>
+ <way id="751360358">
+  <nd ref="4936362551"/>
+  <nd ref="1777036304"/>
+  <tag k="highway" v="primary"/>
+  <tag k="name" v="Rodovia Armando Salles de Oliveira"/>
+  <tag k="oneway" v="no"/>
+  <tag k="surface" v="asphalt"/>
+  <tag k="ref" v="SP-322"/>
+  <tag k="maxspeed" v="100"/>
+ </way>
  <relation id="298093" visible="true" version="12" changeset="151820697" timestamp="2024-05-25T17:09:56Z" user="Ariel Rocha de Souza" uid="13984652">
   <member type="way" ref="42846899" role="outer"/>
   <member type="way" ref="42847443" role="outer"/>
