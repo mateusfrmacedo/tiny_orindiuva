@@ -79,8 +79,8 @@ export function squareProps(area){
  const at=(u,v)=>fr.origin.map((o,j)=>o+fr.u[j]*u+fr.v[j]*v),dirOf=(du,dv)=>{const d=[uHat[0]*du+vHat[0]*dv,uHat[1]*du+vHat[1]*dv],l=Math.hypot(...d)||1;return [d[0]/l,d[1]/l]};
  const props=[];
  if(vis.portals){const {from,to,count,width,height,colour}=vis.portals,along=dirOf((to[0]-from[0])*W,(to[1]-from[1])*H),across=[-along[1],along[0]];
-  // Each arch is an open box frame: width along the row, depth across it.
-  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:along,width,depth:vis.portals.depth||0,height,colour,r:2})}}
+  // Arches stand side by side along the row (an open box frame when a depth is given).
+  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:along,width,depth:vis.portals.depth||0,arch:!!vis.portals.arch,height,colour,r:2})}}
  for(const [u,v]of vis.lamps||[])props.push({kind:'lamp',p:at(u,v),dir:dirOf(0,1),r:1.2});
  for(const [u,v,du,dv]of vis.benches||[])props.push({kind:'bench',p:at(u,v),dir:dirOf(du,dv),r:.6});
  for(const [u,v]of vis.bins||[])props.push({kind:'bin',p:at(u,v),dir:dirOf(1,0),r:.4});
@@ -98,6 +98,15 @@ function box(ctx,iso,c,dir,a0,a1,b0,b1,z0,z1,[light,dark,top]){const n=[-dir[1],
 }
 
 export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir;
+ if(prop.kind==='portal'&&prop.arch){const w=prop.width/2,s=.32,t=.3,h=prop.height,k=1.15,n=[-dir[1],dir[0]];
+  // A round-topped arch standing across the path, seen face-on; its shadow
+  // falls toward the avenue as the U shapes in the satellite view.
+  const ring=[];const leg=(x,z)=>ring.push([x,z]);leg(-w,0);for(let i=0;i<=12;i++){const q=Math.PI-i*Math.PI/12;leg(Math.cos(q)*w,h-w+Math.sin(q)*w)}leg(w,0);leg(w-s,0);for(let i=0;i<=12;i++){const q=i*Math.PI/12;leg(Math.cos(q)*(w-s),h-w+Math.sin(q)*(w-s))}leg(-w+s,0);
+  const P=(a,b)=>[c[0]+dir[0]*a+n[0]*b,c[1]+dir[1]*a+n[1]*b];
+  poly(ctx,ring.map(([a,z])=>iso(P(a,t/2+z*k),0)),'rgba(54,60,48,.2)');
+  poly(ctx,ring.map(([a,z])=>iso(P(a,-t/2),z)),'#9c4b3a');
+  for(const a of [-w,w-s])poly(ctx,[iso(P(a,-t/2),0),iso(P(a+s,-t/2),0),iso(P(a+s,t/2),0),iso(P(a,t/2),0)],'#8f4435');
+  poly(ctx,ring.map(([a,z])=>iso(P(a,t/2),z)),prop.colour||'#cd6c55','#a4513f',.05);return}
  if(prop.kind==='portal'){const w=prop.width/2,h=prop.height,s=.24,col=[prop.colour||'#cd6c55','#a4513f','#de8a73'];
   // Two square posts and a lintel, painted terracotta like the photo.
   const d=(prop.depth||0)/2,ends=d?[-d,d]:[0];

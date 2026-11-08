@@ -426,16 +426,16 @@
       "portals": {
         "from": [
           0.408,
-          0.513
+          0.566
         ],
         "to": [
           0.507,
-          0.513
+          0.566
         ],
         "count": 4,
-        "width": 3.2,
-        "depth": 5.0,
+        "width": 3.3,
         "height": 4.3,
+        "arch": true,
         "colour": "#cd6c55"
       },
       "lamps": [
