@@ -46,10 +46,12 @@ export function drawLandmark(ctx,area,project,scale){
   // Praça Jair Nunes dos Santos: rose-beige interlocking pavers, a concrete
   // strip with parking along the avenue, and kerbed lawn islands between paths.
   const vis=area.visual,strip=vis.concreteStrip||.075;
-  shape(outline,'#d2bfac');
+  // The paved square has rounded corners; outside them the street shows.
+  if(vis.paving){shape(outline,'#8d8a85');const r=2.6,P=vis.paving,pts=[];P.forEach((c,i)=>{const prev=P[(i+P.length-1)%P.length],next=P[(i+1)%P.length],dir=(q)=>{const du=(q[0]-c[0])*frame.width,dv=(q[1]-c[1])*frame.height,l=Math.hypot(du,dv);return [du/l*r/frame.width,dv/l*r/frame.height]},a=dir(prev),b=dir(next);for(let k=0;k<=6;k++){const t=k/6,w0=(1-t)*(1-t),w1=2*(1-t)*t,w2=t*t;pts.push([w0*(c[0]+a[0])+w1*c[0]+w2*(c[0]+b[0]),w0*(c[1]+a[1])+w1*c[1]+w2*(c[1]+b[1])])}});shape(pts.map(p=>uv(...p)),'#d2bfac','#eeebe3',.35)}else shape(outline,'#d2bfac');
   if(scale>1.3){ctx.save();ctx.globalAlpha=.32;for(let k=-1;k<=2;k+=1.2/frame.width){line([[k,0],[k+.42,1]],'#a99482',.06);line([[k+.42,0],[k,1]],'#a99482',.06)}ctx.restore()}
   rect(-.05,-.05,1.1,strip+.05,'#d8d4ca');line([[-.05,strip],[1.05,strip]],'#f1efe8',.45);
   if(scale>1)for(let u=0;u<1;u+=2.6/frame.width)line([[u,.004],[u,strip-.012]],'#b9b4a8',.06);
+  if(vis.sideParking){const w=vis.sideParking;rect(0,strip,w,.9-strip,'#d8d4ca');line([[w,strip],[w,.92]],'#f1efe8',.45);if(scale>1)for(let v=strip+.04;v<.9;v+=2.5/frame.height)line([[.004,v],[w-.008,v]],'#bcb7ab',.07)}
   for(const [u0,u1]of vis.accessibleBays||[]){rect(u0,.006,u1-u0,strip-.02,null,'#e3a63a');for(let u=u0;u<u1-.004;u+=.9/frame.width)line([[u,.008],[Math.min(u1,u+.03),strip-.014]],'#e7aa3c',.18)}
   const grow=(pts,m)=>{const c=pts.reduce((s,p)=>[s[0]+p[0]/pts.length,s[1]+p[1]/pts.length],[0,0]);return pts.map(([u,v])=>{const du=(u-c[0])*frame.width,dv=(v-c[1])*frame.height,d=Math.hypot(du,dv)||1;return [u+du/d*m/frame.width,v+dv/d*m/frame.height]})};
   for(const lawn of vis.lawns||[]){shape(grow(lawn,.3).map(p=>uv(...p)),'#ebe8df','#bdb7aa',.08);shape(lawn.map(p=>uv(...p)),'#7fae55');if(scale>1.4){ctx.save();ctx.globalAlpha=.25;shape(grow(lawn,-.8).map(p=>uv(...p)),'#93bd63');ctx.restore()}}
@@ -77,7 +79,8 @@ export function squareProps(area){
  const at=(u,v)=>fr.origin.map((o,j)=>o+fr.u[j]*u+fr.v[j]*v),dirOf=(du,dv)=>{const d=[uHat[0]*du+vHat[0]*dv,uHat[1]*du+vHat[1]*dv],l=Math.hypot(...d)||1;return [d[0]/l,d[1]/l]};
  const props=[];
  if(vis.portals){const {from,to,count,width,height,colour}=vis.portals,along=dirOf((to[0]-from[0])*W,(to[1]-from[1])*H),across=[-along[1],along[0]];
-  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:across,width,height,colour,r:1.5})}}
+  // Each arch is an open box frame: width along the row, depth across it.
+  for(let i=0;i<count;i++){const t=count>1?i/(count-1):.5;props.push({kind:'portal',p:at(from[0]+(to[0]-from[0])*t,from[1]+(to[1]-from[1])*t),dir:along,width,depth:vis.portals.depth||0,height,colour,r:2})}}
  for(const [u,v]of vis.lamps||[])props.push({kind:'lamp',p:at(u,v),dir:dirOf(0,1),r:1.2});
  for(const [u,v,du,dv]of vis.benches||[])props.push({kind:'bench',p:at(u,v),dir:dirOf(du,dv),r:.6});
  for(const [u,v]of vis.bins||[])props.push({kind:'bin',p:at(u,v),dir:dirOf(1,0),r:.4});
@@ -97,7 +100,11 @@ function box(ctx,iso,c,dir,a0,a1,b0,b1,z0,z1,[light,dark,top]){const n=[-dir[1],
 export function drawSquareProp(ctx,prop,iso,scale=1){const c=prop.p,dir=prop.dir;
  if(prop.kind==='portal'){const w=prop.width/2,h=prop.height,s=.24,col=[prop.colour||'#cd6c55','#a4513f','#de8a73'];
   // Two square posts and a lintel, painted terracotta like the photo.
-  box(ctx,iso,c,dir,-w-s,-w+s,-s,s,0,h,col);box(ctx,iso,c,dir,w-s,w+s,-s,s,0,h,col);box(ctx,iso,c,dir,-w-s,w+s,-s,s,h-.5,h,col);return}
+  const d=(prop.depth||0)/2,ends=d?[-d,d]:[0];
+  // Posts first, back row before front, then the beams that tie them at the top.
+  for(const b of [...ends].sort((x,y)=>x-y))for(const a of [-w,w])box(ctx,iso,c,dir,a-s,a+s,b-s,b+s,0,h,col);
+  if(d)for(const a of [-w,w])box(ctx,iso,c,dir,a-s,a+s,-d-s,d+s,h-.4,h,col);
+  for(const b of ends)box(ctx,iso,c,dir,-w-s,w+s,b-s,b+s,h-.5,h,col);return}
  if(prop.kind==='lamp'){const base=iso(c,0),top=iso(c,4.3),arm=[c[0]+dir[0]*.75,c[1]+dir[1]*.75],end=iso(arm,4.25),hang=iso(arm,3.85);
   ctx.strokeStyle='#2f3935';ctx.lineCap='round';ctx.lineWidth=.16;ctx.beginPath();ctx.moveTo(...base);ctx.lineTo(...top);ctx.quadraticCurveTo(...iso([c[0]+dir[0]*.55,c[1]+dir[1]*.55],4.75),...end);ctx.lineTo(...hang);ctx.stroke();
   poly(ctx,[iso([c[0]-.18,c[1]-.18],0),iso([c[0]+.18,c[1]-.18],0),iso([c[0]+.18,c[1]+.18],0),iso([c[0]-.18,c[1]+.18],0)],'#3a4440');
